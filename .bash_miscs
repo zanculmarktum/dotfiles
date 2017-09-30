@@ -1,0 +1,8 @@
+# Hides ^C
+stty -ctlecho
+
+# Use ^W to delete one word
+#stty werase undef
+#bind '\C-w:unix-filename-rubout'
+
+# vim:ft=sh

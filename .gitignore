@@ -12,3 +12,11 @@
 # aria2
 !.aria2
 !.aria2/**
+
+# Bash
+!.bash_profile
+!.bashrc
+
+!.bash_aliases
+!.bash_functions
+!.bash_miscs
