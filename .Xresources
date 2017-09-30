@@ -1,0 +1,128 @@
+Xft.dpi: 96
+Xft.antialias: true
+Xft.hinting: true
+Xft.rgba: rgb
+Xft.autohint: false
+Xft.hintstyle: hintslight
+Xft.lcdfilter: lcddefault
+
+! URxvt
+URxvt.font:     xft:Terminus:size=8:antialias=true
+URxvt.boldFont: xft:Terminus:size=8:antialias=true
+!URxvt.font:     xft:Meslo LG S:size=8:antialias=true
+!URxvt.boldFont: xft:Meslo LG S:bold:size=8:antialias=true
+!URxvt.letterSpace: -1
+URxvt.scrollBar: false
+URxvt.scrollBar_right: false
+URxvt.scrollBar_floating: false
+!URxvt.depth: 32
+!URxvt.background: [93]#ff00ff
+! Enable Perl extensions
+URxvt.perl-ext-common: eval,tabbed
+! Tab
+URxvt.tabbed.tabbar-fg: -1
+URxvt.tabbed.tabbar-bg: 7
+URxvt.tabbed.tab-fg: 7
+URxvt.tabbed.tab-bg: -1
+! Clipboard
+URxvt.keysym.M-c: eval:selection_to_clipboard
+URxvt.keysym.M-v: eval:paste_clipboard
+URxvt.keysym.M-V: eval:paste_primary
+! Scrolling
+URxvt.keysym.M-Up:   eval:scroll_up 1
+URxvt.keysym.M-Down: eval:scroll_down 1
+URxvt.keysym.S-Home: eval:scroll_to_top
+URxvt.keysym.S-End:  eval:scroll_to_bottom
+! Disable C-Shift
+URxvt.iso14755: False
+! Maximum lines we can scrollback
+URxvt.saveLines: 100000
+
+! XTerm
+XTerm*allowBoldFonts: true
+XTerm*locale: true
+XTerm*faceName: Terminus:size=9
+XTerm*borderWidth: 0
+XTerm*eightBitInput: false
+XTerm*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0)
+!XTerm*selectToClipboard: true
+
+! xfd
+!xfd*Background: #002b36
+!xfd*Foreground: #839496
+
+! Black colorscheme
+! special
+*.foreground:   #9ba2b2
+*.background:   #1e2127
+*.cursorColor:  #9ba2b2
+
+! black
+*.color0:       #1e2127
+*.color8:       #282c34
+
+! red
+*.color1:       #d95360
+*.color9:       #e06c75
+
+! green
+*.color2:       #86bb62
+*.color10:      #98c379
+
+! yellow
+*.color3:       #c7894f
+*.color11:      #e5c07b
+
+! blue
+*.color4:       #5294e2
+*.color12:      #61afef
+
+! magenta
+*.color5:       #b959d8
+*.color13:      #c678dd
+
+! cyan
+*.color6:       #44a8b6
+*.color14:      #56b6c2
+
+! white
+*.color7:       #9ba2b2
+*.color15:      #c8ccd4
+
+! White colorscheme
+!! special
+!*.foreground:   #5c616c
+!*.background:   #e7e8eb
+!*.cursorColor:  #5c616c
+!
+!! black
+!*.color0:       #e7e8eb
+!*.color8:       #5c616c
+!
+!! red
+!*.color1:       #e45e5e
+!*.color9:       #e45e5e
+!
+!! green
+!*.color2:       #65df6b
+!*.color10:      #65df6b
+!
+!! yellow
+!*.color3:       #d6aa24
+!*.color11:      #d6aa24
+!
+!! blue
+!*.color4:       #0087ff
+!*.color12:      #0087ff
+!
+!! magenta
+!*.color5:       #ee89e9
+!*.color13:      #ee89e9
+!
+!! cyan
+!*.color6:       #5294e2
+!*.color14:      #5294e2
+!
+!! white
+!*.color7:       #5c616c
+!*.color15:      #5c616c
