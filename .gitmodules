@@ -1,0 +1,9 @@
+[submodule ".vim/pack/colors/start/bubblegum"]
+	path = .vim/pack/colors/start/bubblegum
+	url = https://github.com/baskerville/bubblegum.git
+[submodule ".vim/pack/pkg/opt/vim-misc"]
+	path = .vim/pack/pkg/opt/vim-misc
+	url = https://github.com/xolox/vim-misc.git
+[submodule ".vim/pack/pkg/opt/vim-session"]
+	path = .vim/pack/pkg/opt/vim-session
+	url = https://github.com/xolox/vim-session.git
