@@ -1,6 +1,7 @@
 [submodule ".vim/pack/colors/start/bubblegum"]
 	path = .vim/pack/colors/start/bubblegum
 	url = https://github.com/baskerville/bubblegum.git
+	ignore = dirty
 [submodule ".vim/pack/pkg/opt/vim-misc"]
 	path = .vim/pack/pkg/opt/vim-misc
 	url = https://github.com/xolox/vim-misc.git

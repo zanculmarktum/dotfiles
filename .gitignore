@@ -1,11 +1,14 @@
-# Ignore everything
 *
 
-# But not these files
 !.gitignore
 
+# Vim
 !.vim
 !.vim/**
 
 !.vimrc
 !.gvimrc
+
+# aria2
+!.aria2
+!.aria2/**
