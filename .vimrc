@@ -6,6 +6,7 @@ set nobackup   " this
 set noundofile " is
 set noswapfile " absolutely
 set nowrap     " nonsense
+set linebreak
 set autochdir " auto change working dir to the current buffer
 set selection=old " prevent selection from including carriage return
 set number " shows line number
@@ -58,9 +59,11 @@ nnoremap * *``
 au VimEnter * nmap <C-o> :<C-u>call EnhancedJumps#Jump(0,'local')<CR>
 au VimEnter * nmap <C-i> :<C-u>call EnhancedJumps#Jump(1,'local')<CR>
 
-" Allows to jk on wrapped line
-nnoremap j gj
-nnoremap k gk
+" Allows to j, k, 0, g on wrapped line
+au BufEnter * if &wrap|nnoremap <buffer> j gj|en
+au BufEnter * if &wrap|nnoremap <buffer> k gk|en
+au BufEnter * if &wrap|nnoremap <buffer> 0 g0|en
+au BufEnter * if &wrap|nnoremap <buffer> $ g$|en
 
 " Stop using arrow keys
 "nnoremap <Up> <Nop>
