@@ -30,8 +30,9 @@ fi
 
 # `gvim <file>' now uses previous gvim instance, if any
 alias gvim='gvim --remote-tab-silent'
-# For safety
-alias view='vim -Rm'
+# Safety net
+#alias view='vim -Rm'
+alias view='vim -R'
 
 # ed
 alias ed='ed -p\*'
