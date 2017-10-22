@@ -25,6 +25,7 @@ set wildmenu " displays completion in status line
 set ttimeoutlen=0 " disables waiting after <Esc> was inputted
 set splitbelow splitright " the way vim put new splitted window sure is annoys me
 set history=10000 " maximum ":" commands to be remembered
+set viminfo+=/10000 " maximum "/" commands to be remembered
 
 " Set how a <Tab> should looks like
 set tabstop=4
