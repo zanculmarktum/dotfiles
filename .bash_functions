@@ -142,4 +142,21 @@ getcrx() {
 	echo 'https://clients2.google.com/service/update2/crx?response=redirect&x=id%3D'"$1"'%26uc&prodversion=32'
 }
 
+(
+	. /etc/os-release
+	if [ "$NAME" = "Slackware" ]; then
+		true
+	else
+		false
+	fi
+) && {
+	package_name() {
+		local NAME="${1##*/}"
+		NAME="${NAME%-*}"
+		NAME="${NAME%-*}"
+		NAME="${NAME%-*}"
+		echo "$NAME"
+	}
+}
+
 # vim:ft=sh
