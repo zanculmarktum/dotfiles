@@ -32,3 +32,6 @@
 
 # readline
 !.inputrc
+
+# Xmodmap
+!.Xmodmap

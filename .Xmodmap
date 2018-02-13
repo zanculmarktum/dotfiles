@@ -1,0 +1,9 @@
+! Menu
+keysym Menu = Super_R
+
+! Caps lock
+clear Lock
+keysym Caps_Lock = Tab
+
+! Tab
+keysym Tab = Escape
