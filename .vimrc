@@ -51,7 +51,10 @@ endf
 au BufNewFile,BufRead *Pkgfile set filetype=sh
 
 " Default keyword for *
-au TabNew,BufRead * set iskeyword&
+if v:version >= 800
+  " 'iskeyword' requires version 8.0 or higher
+  au TabNew,BufRead * set iskeyword&
+en
 
 " Do not jump automatically when pressing *
 nnoremap * *``
