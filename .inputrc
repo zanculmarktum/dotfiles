@@ -1,0 +1,15 @@
+$include /etc/inputrc
+
+# Colorize file-completion.
+set colored-stats On
+
+# Case insensitive completion.
+set completion-ignore-case On
+
+# Search through history:
+"\C-n": history-search-forward
+"\C-p": history-search-backward
+# down
+"\e[B": history-search-forward
+# up
+"\e[A": history-search-backward

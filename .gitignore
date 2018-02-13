@@ -26,3 +26,6 @@
 
 # .Xresources
 !.Xresources
+
+# readline
+!.inputrc
