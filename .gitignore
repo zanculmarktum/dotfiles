@@ -2,6 +2,9 @@
 
 !.gitignore
 
+# Git
+!.gitconfig
+
 # Vim
 !.vim
 !.vim/**
