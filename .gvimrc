@@ -19,7 +19,12 @@ fu SaveTabs()
   cal writefile(l:lines, l:tabfile)
 endf
 ",TabEnter
-au VimLeave,TabNew,TabClosed * cal SaveTabs()
+if v:version >= 800
+  " TabNew and TabClosed requires 8.0 or higher
+  au VimLeave,TabNew,TabClosed * cal SaveTabs()
+el
+  au VimLeave * cal SaveTabs()
+en
 
 set bg=dark
 "colo bubblegum-256-dark
