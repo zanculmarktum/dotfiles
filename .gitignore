@@ -35,3 +35,6 @@
 
 # Xmodmap
 !.Xmodmap
+
+# Info
+!.infokey
