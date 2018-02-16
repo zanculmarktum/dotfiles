@@ -80,6 +80,9 @@ case $session in
   herbstluftwm)
     ck-launch-session dbus-launch --exit-with-session herbstluftwm
     ;;
+  twm)
+    ck-launch-session dbus-launch --exit-with-session twm
+    ;;
   # No known session, try to run it as command
   *) exec $1;;
 esac
