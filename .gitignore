@@ -38,3 +38,8 @@
 
 # Info
 !.infokey
+
+# mpv
+!.config
+!.config/mpv
+!.config/mpv/mpv.conf
