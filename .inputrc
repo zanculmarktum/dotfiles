@@ -1,5 +1,11 @@
 $include /etc/inputrc
 
+# Set various nice escape sequences:
+
+# for rxvt
+"[7~": beginning-of-line
+"[8~": end-of-line
+
 # Colorize file-completion.
 set colored-stats On
 
