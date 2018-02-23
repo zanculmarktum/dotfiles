@@ -37,6 +37,8 @@ let &listchars = 'tab:¦ '
 set list
 
 packadd indentLine
+let g:indentLine_char = '¦'
+let g:indentLine_first_char = '¦'
 let g:indentLine_showFirstIndentLevel = 1
 if !has('gui_running')
   let g:indentLine_color_term = 244 " #808080
