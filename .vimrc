@@ -35,6 +35,8 @@ set noexpandtab
 " Indentation line
 let &listchars = 'tab:¦ '
 set list
+" #808080
+autocmd VimEnter * highlight SpecialKey ctermfg=244
 
 packadd indentLine
 let g:indentLine_char = '¦'
