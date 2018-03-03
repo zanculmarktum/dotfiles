@@ -43,3 +43,7 @@
 !.config
 !.config/mpv
 !.config/mpv/mpv.conf
+
+# fontconfig
+!.config/fontconfig
+!.config/fontconfig/**
