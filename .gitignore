@@ -47,3 +47,10 @@
 # fontconfig
 !.config/fontconfig
 !.config/fontconfig/**
+
+# python
+!.pystartup
+
+# conky
+!.config/conky
+!.config/conky/conky.conf
