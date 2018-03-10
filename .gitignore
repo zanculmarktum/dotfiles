@@ -57,3 +57,7 @@
 
 # redshift
 !.config/redshift.conf
+
+# dwm
+!.dwm
+!.dwm/autostart.sh
