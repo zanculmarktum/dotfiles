@@ -54,3 +54,6 @@
 # conky
 !.config/conky
 !.config/conky/conky.conf
+
+# redshift
+!.config/redshift.conf
