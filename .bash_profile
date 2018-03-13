@@ -14,7 +14,6 @@ stty -ixon
 export LANG="en_US.UTF-8"
 export PATH="$HOME/.local/bin:$PATH"
 export MANPATH="$HOME/.local/man:$MANPATH"
-export TERMINAL="urxvt"
 export EDITOR="vim"
 #export LYNX_CFG="~/.lynx.cfg"
 #export LYNX_LSS="~/.lynx.lss"
