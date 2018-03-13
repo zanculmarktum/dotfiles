@@ -53,9 +53,6 @@ alias df='df -h'
 alias du='du -h'
 alias free='free -h'
 
-# Diff
-alias diff='git --no-pager diff --color=auto --no-ext-diff --no-index'
-
 # Security, maybe?
 alias firefox='firefox -offline'
 
