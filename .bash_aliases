@@ -60,4 +60,4 @@ alias firefox='firefox -offline'
 alias clean='awk '"'"'{if(!_[$0]++){print}}'"'"
 
 # screenfetch without nonsense
-alias screenfetch='screenfetch -d '"'"'-host;-res;-cpu;-gpu;-mem'"'"
+alias screenfetch='screenfetch -d '"'"'-host;-res;-cpu;-gpu'"'"
