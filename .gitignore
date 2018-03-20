@@ -61,3 +61,7 @@
 # dwm
 !.dwm
 !.dwm/autostart.sh
+
+# zathura
+!.config/zathura
+!.config/zathura/zathurarc
