@@ -1,0 +1,10 @@
+require("session.js");
+session_auto_save_auto_load = true;
+
+//user_pref("font.internaluseonly.changed", true);
+user_pref("font.minimum-size.x-western", 12);
+user_pref("font.name.sans-serif.x-western", "Cantarell");
+user_pref("font.name.serif.x-western", "Cantarell");
+user_pref("font.size.variable.x-western", 12);
+
+url_completion_use_history = true;

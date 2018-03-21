@@ -65,3 +65,6 @@
 # zathura
 !.config/zathura
 !.config/zathura/zathurarc
+
+# conkeror
+!.conkerorrc
