@@ -68,3 +68,7 @@
 
 # conkeror
 !.conkerorrc
+
+# qutebrowser
+!.config/qutebrowser
+!.config/qutebrowser/config.py
