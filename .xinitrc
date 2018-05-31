@@ -63,7 +63,7 @@ case $session in
     ck-launch-session dbus-launch --exit-with-session monsterwm
     ;;
   dwm)
-    ck-launch-session dbus-launch --exit-with-session ~/.config/dwm/autostart.sh
+    exec ck-launch-session dwm
     ;;
   wmii)
     ck-launch-session dbus-launch --exit-with-session wmii
