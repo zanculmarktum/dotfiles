@@ -76,3 +76,4 @@
 # termux
 !.termux
 !.termux/colors.properties
+!.termux/font.ttf
