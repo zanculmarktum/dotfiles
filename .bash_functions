@@ -100,7 +100,7 @@ cd() {
 		DIR="$1"
 	fi
 	
-	if [[ "x$DIR" != "x-" ]] && ! grep -qs "^+[0-9]\+" <<< "$DIR"; then
+	if [[ ! $DIR =~ ^\+[0-9]+ ]]; then
 		if [[ ! -e "$DIR" ]]; then
 			echo "bash: cd: $DIR: No such file or directory"
 			EXITCODE=1
