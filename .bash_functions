@@ -143,11 +143,11 @@ getcrx() {
 }
 
 (
-	. /etc/os-release
-	if [ "$NAME" = "Slackware" ]; then
-		true
+	if [[ -f /etc/os-release ]]; then
+		. /etc/os-release
+		[[ $NAME == Slackware ]] && exit 0 || exit 1
 	else
-		false
+		exit 1
 	fi
 ) && {
 	package_name() {
