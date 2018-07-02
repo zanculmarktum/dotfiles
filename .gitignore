@@ -72,3 +72,7 @@
 # qutebrowser
 !.config/qutebrowser
 !.config/qutebrowser/config.py
+
+# termux
+!.termux
+!.termux/colors.properties
