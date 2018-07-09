@@ -5,4 +5,8 @@ stty -ctlecho
 #stty werase undef
 #bind '\C-w:unix-filename-rubout'
 
+if [[ $SHELL == /data/data/com.termux* ]]; then
+	eval $(SHELL=/data/data/com.termux/files/usr/bin/bash dircolors)
+fi
+
 # vim:ft=sh
