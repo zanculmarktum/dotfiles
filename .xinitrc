@@ -34,6 +34,9 @@ if grep -qe 'ThinkPad' /sys/devices/virtual/dmi/id/product_version; then
   xinput set-prop "SynPS/2 Synaptics TouchPad" "Device Enabled" 0
 fi
 
+# Starts xbindkeys
+xbindkeys
+
 # Starts the party
 session=${1:-dwm}
 

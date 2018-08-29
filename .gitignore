@@ -77,3 +77,6 @@
 !.termux
 !.termux/colors.properties
 !.termux/font.ttf
+
+# xbindkey
+!.xbindkeysrc
