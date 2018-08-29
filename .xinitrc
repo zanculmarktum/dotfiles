@@ -23,6 +23,17 @@ sysmodmap=/etc/X11/xinit/.Xmodmap
 #xset +fp $HOME/.local/share/fonts
 #xset fp rehash
 
+if grep -qe 'ThinkPad' /sys/devices/virtual/dmi/id/product_version; then
+  # TrackPoint
+  xinput set-prop "TPPS/2 IBM TrackPoint" "Evdev Wheel Emulation" 1
+  xinput set-prop "TPPS/2 IBM TrackPoint" "Evdev Wheel Emulation Button" 2
+  xinput set-prop "TPPS/2 IBM TrackPoint" "Evdev Wheel Emulation Timeout" 200
+  xinput set-prop "TPPS/2 IBM TrackPoint" "Evdev Wheel Emulation Axes" 6 7 4 5
+
+  # TouchPad
+  xinput set-prop "SynPS/2 Synaptics TouchPad" "Device Enabled" 0
+fi
+
 # Starts the party
 session=${1:-dwm}
 
