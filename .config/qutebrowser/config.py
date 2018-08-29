@@ -2,7 +2,6 @@
 # config.load_autoconfig()
 
 #c.backend = 'webkit'
-c.content.developer_extras = True
 c.url.searchengines = {'DEFAULT': 'https://duckduckgo.com/?q={}', 'g': 'https://www.google.com/search?q={}', 'sx': 'https://www.searx.me/?q={}'}
 c.fonts.web.family.fixed = '"DejaVu Sans Mono"'
 c.fonts.web.family.sans_serif = 'Cantarell'
