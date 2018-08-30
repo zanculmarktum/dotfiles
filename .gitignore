@@ -80,3 +80,11 @@
 
 # xbindkey
 !.xbindkeysrc
+
+# .desktop files
+!.local
+!.local/share
+!.local/share/applications
+!.local/share/applications/mozilla-firefox.desktop
+!.local/share/applications/qutebrowser.desktop
+!.local/share/applications/rxvt-dir.desktop
