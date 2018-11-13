@@ -20,10 +20,10 @@ URxvt.scrollBar_floating: false
 ! Enable Perl extensions
 URxvt.perl-ext-common: eval,tabbed
 ! Tab
-URxvt.tabbed.tabbar-fg: -1
-URxvt.tabbed.tabbar-bg: 7
-URxvt.tabbed.tab-fg: 7
-URxvt.tabbed.tab-bg: -1
+URxvt.tabbed.tabbar-fg: -7
+URxvt.tabbed.tabbar-bg: -1
+URxvt.tabbed.tab-fg: -7
+URxvt.tabbed.tab-bg: 4
 ! Clipboard
 URxvt.keysym.M-c: eval:selection_to_clipboard
 URxvt.keysym.M-v: eval:paste_clipboard
@@ -51,43 +51,81 @@ XTerm*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT
 !xfd*Background: #002b36
 !xfd*Foreground: #839496
 
-! Black colorscheme
+!arc-kde colorscheme
 ! special
-*.foreground:   #9ba2b2
-*.background:   #1e2127
-*.cursorColor:  #9ba2b2
+*.foreground:   #d3dae3
+*.background:   #383c4a
+*.cursorColor:  #d3dae3
 
 ! black
-*.color0:       #1e2127
-*.color8:       #282c34
+*.color0:       #4b5164
+*.color8:       #616981
 
 ! red
-*.color1:       #d95360
-*.color9:       #e06c75
+*.color1:       #e14245
+*.color9:       #e16f7e
 
 ! green
-*.color2:       #86bb62
-*.color10:      #98c379
+*.color2:       #5ca75b
+*.color10:      #add488
 
 ! yellow
-*.color3:       #c7894f
-*.color11:      #e5c07b
+*.color3:       #f6ab32
+*.color11:      #fdc35f
 
 ! blue
-*.color4:       #5294e2
-*.color12:      #61afef
+*.color4:       #4877b1
+*.color12:      #8ca9bf
 
 ! magenta
-*.color5:       #b959d8
-*.color13:      #c678dd
+*.color5:       #a660c3
+*.color13:      #e2afec
 
 ! cyan
-*.color6:       #44a8b6
-*.color14:      #56b6c2
+*.color6:       #5294e2
+*.color14:      #73c5e2
 
 ! white
-*.color7:       #9ba2b2
-*.color15:      #c8ccd4
+*.color7:       #a9a9aa
+*.color15:      #fcfcfc
+
+! Black colorscheme
+!! special
+!*.foreground:   #9ba2b2
+!*.background:   #1e2127
+!*.cursorColor:  #9ba2b2
+!
+!! black
+!*.color0:       #1e2127
+!*.color8:       #282c34
+!
+!! red
+!*.color1:       #d95360
+!*.color9:       #e06c75
+!
+!! green
+!*.color2:       #86bb62
+!*.color10:      #98c379
+!
+!! yellow
+!*.color3:       #c7894f
+!*.color11:      #e5c07b
+!
+!! blue
+!*.color4:       #5294e2
+!*.color12:      #61afef
+!
+!! magenta
+!*.color5:       #b959d8
+!*.color13:      #c678dd
+!
+!! cyan
+!*.color6:       #44a8b6
+!*.color14:      #56b6c2
+!
+!! white
+!*.color7:       #9ba2b2
+!*.color15:      #c8ccd4
 
 ! White colorscheme
 !! special
