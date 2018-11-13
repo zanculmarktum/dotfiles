@@ -88,3 +88,7 @@
 !.local/share/applications/mozilla-firefox.desktop
 !.local/share/applications/qutebrowser.desktop
 !.local/share/applications/rxvt-dir.desktop
+
+# urxvt
+!.urxvt
+!.urxvt/**
