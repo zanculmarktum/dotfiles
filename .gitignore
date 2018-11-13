@@ -8,6 +8,7 @@
 # Vim
 !.vim
 !.vim/**
+.vim/undodir
 
 !.vimrc
 !.gvimrc
