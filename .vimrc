@@ -2,18 +2,21 @@ if filereadable($VIMRUNTIME . '/vimrc_example.vim')
   source $VIMRUNTIME/vimrc_example.vim
 en
 
-set nobackup   " this
-set noundofile " is
-set noswapfile " absolutely
-set nowrap     " nonsense
+set hidden
+set nobackup
+"set noundofile
+if !isdirectory(expand('~/.vim/undodir')) | call mkdir(expand('~/.vim/undodir'), 'p') | endif
+let &undodir = expand('~/.vim/undodir')
+set noswapfile
+set nowrap
 set linebreak
 set autochdir " auto change working dir to the current buffer
 set selection=old " prevent selection from including carriage return
 set number " shows line number
-set showtabline=2 " always shows tab line
+"set showtabline=2 " always shows tab line
 "set clipboard-=autoselect " do not copy when selecting text
 "if !has('gui_running')
-  set tabline=%!MyTabLine() " sets up tabline
+" set tabline=%!MyTabLine() " sets up tabline
 "endif
 set autoread " auto read if file has changed
 set nowrapscan " don't loop back to the beginning when (/|?)'ing
@@ -45,6 +48,9 @@ let g:indentLine_showFirstIndentLevel = 1
 if !has('gui_running')
   let g:indentLine_color_term = 244 " #808080
 en
+
+" Deletes undofiles
+autocmd VimLeave * for b in getbufinfo() | call delete(&undodir . '/' . fnamemodify(b.name, ':gs?/?%?')) | endfor
 
 " Remembers current line number in l
 fu Line()
@@ -123,9 +129,16 @@ source $VIMRUNTIME/ftplugin/man.vim
 nnoremap K :Man <cword><CR>
 
 " Sets colorscheme
-if &term =~ 'rxvt' || &term =~ 'xterm' || &term =~ 'st-'
-  set background=dark
-  colorscheme bubblegum-256-dark
+"if &term =~ 'rxvt' || &term =~ 'xterm' || &term =~ 'st-'
+"  set background=dark
+"  colorscheme bubblegum-256-dark
+"endif
+if !has('gui_running')
+set term=xterm
+set background=dark
+packadd airline
+let g:airline#extensions#whitespace#mixed_indent_algo = 2
+let g:airline#extensions#whitespace#checks = ['indent', 'trailing']
 endif
 
 " Prevents from breaking line
@@ -138,24 +151,24 @@ augroup END
 "cnoreabbrev tc NERDTreeClose
 
 " Sets up cursor line looks
-if !has('gui_running')
-  highlight CursorLine term=bold cterm=bold
-endif
+"if !has('gui_running')
+"  highlight CursorLine term=bold cterm=bold
+"endif
 
 " Sets up tabline looks
-if has('gui_running')
+"if has('gui_running')
 "if g:colors_name
 "  if g:colors_name == 'solarized'
-    highlight TabLine gui=NONE
-    highlight TabLineSel gui=reverse
-    highlight TabLineFill gui=NONE
+    "highlight TabLine gui=NONE
+    "highlight TabLineSel gui=reverse
+    "highlight TabLineFill gui=NONE
 
     "highlight TabLine     term=underline cterm=underline ctermfg=15 ctermbg=8 gui=underline guifg=#839496 guibg=#073642 guisp=#839496
     "highlight TabLineSel  term=underline,reverse cterm=bold gui=underline,reverse guifg=#586e75 guibg=#eee8d5 guisp=#839496
     "highlight TabLineFill term=underline cterm=reverse gui=underline guifg=#839496 guibg=#073642 guisp=#839496
 "  endif
 "endif
-endif
+"endif
 
 " Fixs term color
 "if !has('gui_running')
@@ -183,81 +196,81 @@ endif
 
 " Set up tabline {{{
 "if !has('gui_running')
-  " Remove underline
-  highlight TabLine cterm=NONE
-
-  function MyTabLine()
-    let s = ''
-    for i in range(tabpagenr('$'))
-      let active = 0
-      " select the highlighting
-      if i + 1 == tabpagenr()
-        let active = 1
-        let s .= '%#TabLineSel#'
-      else
-        let s .= '%#TabLine#'
-      endif
-
-      " set the tab page number (for mouse clicks)
-      let s .= '%' . (i + 1) . 'T'
-
-      " the label is made by MyTabLabel()
-      let s .= ' %{MyTabLabel(' . (i + 1) . ')} '
-
-      " append some flags, e.g. [+], [-], [RO]
-      if active
-        let s .= '%m'
-        let s .= '%r'
-        "let s .= '%h'
-        let s .= '%w'
-      endif
-
-      " is there any tab that has the same label?
-      "let tabpagenr = tabpagenr('$')
-      "if tabpagenr > 1
-      "  let j = 0
-      "  let label = []
-      "  while j < tabpagenr
-      "    if MyTabLabel(i + 1) != MyTabLabel(tabpagenr - j)
-      "      call add(label, MyTabLabel(tabpagenr - j))
-      "    endif
-      "    let j += 1
-      "  endwhile
-
-      "  for item in label
-      "    if MyTabLabel(i + 1) == item
-      "      let s .= 'UCme?'
-      "    endif
-      "  endfor
-      "endif
-    endfor
-
-    " after the last tab fill with TabLineFill and reset tab page nr
-    let s .= '%#TabLineFill#%T'
-
-    " right-align the label to close the current tab page
-    if tabpagenr('$') > 1
-      let s .= '%=%#TabLine#%999XX'
-    endif
-
-    return s
-  endfunction
-
-  function MyTabLabel(n)
-    let buflist = tabpagebuflist(a:n)
-    let winnr = tabpagewinnr(a:n)
-    let bufname = bufname(buflist[winnr - 1])
-
-    " default name for empty buffer
-    if bufname == ''
-      let bufname = '[No Name]'
-    endif
-
-    " strip path
-    let bufname = fnamemodify(bufname, ':t')
-
-    return bufname
-  endfunction
+"  " Remove underline
+"  highlight TabLine cterm=NONE
+"
+"  function MyTabLine()
+"    let s = ''
+"    for i in range(tabpagenr('$'))
+"      let active = 0
+"      " select the highlighting
+"      if i + 1 == tabpagenr()
+"        let active = 1
+"        let s .= '%#TabLineSel#'
+"      else
+"        let s .= '%#TabLine#'
+"      endif
+"
+"      " set the tab page number (for mouse clicks)
+"      let s .= '%' . (i + 1) . 'T'
+"
+"      " the label is made by MyTabLabel()
+"      let s .= ' %{MyTabLabel(' . (i + 1) . ')} '
+"
+"      " append some flags, e.g. [+], [-], [RO]
+"      if active
+"        let s .= '%m'
+"        let s .= '%r'
+"        "let s .= '%h'
+"        let s .= '%w'
+"      endif
+"
+"      " is there any tab that has the same label?
+"      "let tabpagenr = tabpagenr('$')
+"      "if tabpagenr > 1
+"      "  let j = 0
+"      "  let label = []
+"      "  while j < tabpagenr
+"      "    if MyTabLabel(i + 1) != MyTabLabel(tabpagenr - j)
+"      "      call add(label, MyTabLabel(tabpagenr - j))
+"      "    endif
+"      "    let j += 1
+"      "  endwhile
+"
+"      "  for item in label
+"      "    if MyTabLabel(i + 1) == item
+"      "      let s .= 'UCme?'
+"      "    endif
+"      "  endfor
+"      "endif
+"    endfor
+"
+"    " after the last tab fill with TabLineFill and reset tab page nr
+"    let s .= '%#TabLineFill#%T'
+"
+"    " right-align the label to close the current tab page
+"    if tabpagenr('$') > 1
+"      let s .= '%=%#TabLine#%999XX'
+"    endif
+"
+"    return s
+"  endfunction
+"
+"  function MyTabLabel(n)
+"    let buflist = tabpagebuflist(a:n)
+"    let winnr = tabpagewinnr(a:n)
+"    let bufname = bufname(buflist[winnr - 1])
+"
+"    " default name for empty buffer
+"    if bufname == ''
+"      let bufname = '[No Name]'
+"    endif
+"
+"    " strip path
+"    let bufname = fnamemodify(bufname, ':t')
+"
+"    return bufname
+"  endfunction
 "endif "}}}
 
 " vim:ts=2:sw=2:et
