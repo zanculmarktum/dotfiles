@@ -3,6 +3,7 @@ se gfn=Operator\ Mono\ 10
 se co=150
 se lines=50
 se gcr=n-v-c:blinkoff0
+se t_vb=
 
 "se ssop=tabpages
 "fu SaveTabs()

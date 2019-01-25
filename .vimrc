@@ -29,6 +29,7 @@ set ttimeoutlen=0 " disables waiting after <Esc> was inputted
 set splitbelow splitright " the way vim put new splitted window sure is annoys me
 set history=10000 " maximum ":" commands to be remembered
 set viminfo+=/10000 " maximum "/" commands to be remembered
+set vb t_vb= " disables beeping
 
 " Set how a <Tab> should looks like
 set tabstop=4
@@ -48,6 +49,9 @@ let g:indentLine_showFirstIndentLevel = 1
 if !has('gui_running')
   let g:indentLine_color_term = 244 " #808080
 en
+
+" Disables beeping
+autocmd VimEnter * se t_vb=
 
 " Deletes undofiles
 autocmd VimLeave * for b in getbufinfo() | call delete(&undodir . '/' . fnamemodify(b.name, ':gs?/?%?')) | endfor
