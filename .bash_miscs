@@ -9,4 +9,9 @@ if [[ $SHELL == /data/data/com.termux* ]]; then
 	eval $(SHELL=/data/data/com.termux/files/usr/bin/bash dircolors)
 fi
 
+# Set colors for ls --color=auto
+if [ -x /usr/bin/dircolors ]; then
+  test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+fi
+
 # vim:ft=sh
