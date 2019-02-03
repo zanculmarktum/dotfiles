@@ -22,10 +22,17 @@ alias clear='printf '"'"'\x1bc'"'"
 
 # Haha, no more `sudo /sbin/poweroff|reboot' shit
 if [[ $UID -ne 0 ]]; then
-	alias poweroff='dbus-send --system --print-reply --dest="org.freedesktop.ConsoleKit" /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop'
-	alias reboot='dbus-send --system --print-reply --dest="org.freedesktop.ConsoleKit" /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Restart'
-	alias suspend='dbus-send --system --print-reply --dest="org.freedesktop.ConsoleKit" /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Suspend  boolean:true'
-	alias hibernate='dbus-send --system --print-reply --dest="org.freedesktop.ConsoleKit" /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Hibernate  boolean:true'
+	if [[ -e "/lib/systemd/systemd" ]]; then
+		alias poweroff='systemctl poweroff'
+		alias reboot='systemctl reboot'
+		alias suspend='systemctl suspend'
+		alias hibernate='systemctl hibernate'
+	else
+		alias poweroff='dbus-send --system --print-reply --dest="org.freedesktop.ConsoleKit" /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop'
+		alias reboot='dbus-send --system --print-reply --dest="org.freedesktop.ConsoleKit" /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Restart'
+		alias suspend='dbus-send --system --print-reply --dest="org.freedesktop.ConsoleKit" /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Suspend  boolean:true'
+		alias hibernate='dbus-send --system --print-reply --dest="org.freedesktop.ConsoleKit" /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Hibernate  boolean:true'
+	fi
 fi
 
 # `gvim <file>' now uses previous gvim instance, if any
