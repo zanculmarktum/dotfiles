@@ -68,3 +68,5 @@ alias clean='awk '"'"'{if(!_[$0]++){print}}'"'"
 
 # screenfetch without nonsense
 alias screenfetch='screenfetch -d '"'"'-host;-res;-cpu;-gpu'"'"
+
+alias dquilt='quilt --quiltrc=${HOME}/.quiltrc-dpkg'
