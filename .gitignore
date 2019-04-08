@@ -44,6 +44,7 @@
 !.config
 !.config/mpv
 !.config/mpv/mpv.conf
+!.config/mpv/input.conf
 
 # fontconfig
 !.config/fontconfig
