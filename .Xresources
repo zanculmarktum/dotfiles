@@ -23,7 +23,7 @@ URxvt.perl-ext-common: eval,tabbed
 URxvt.tabbed.tabbar-fg: -7
 URxvt.tabbed.tabbar-bg: -1
 URxvt.tabbed.tab-fg: -7
-URxvt.tabbed.tab-bg: 4
+URxvt.tabbed.tab-bg: 0
 ! Clipboard
 URxvt.keysym.M-c: eval:selection_to_clipboard
 URxvt.keysym.M-v: eval:paste_clipboard
@@ -51,43 +51,81 @@ XTerm*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT
 !xfd*Background: #002b36
 !xfd*Foreground: #839496
 
-!arc-kde colorscheme
+!nord colorscheme
 ! special
-*.foreground:   #d3dae3
-*.background:   #383c4a
-*.cursorColor:  #d3dae3
+*.foreground:   #d8dee8
+*.background:   #2f343f
+*.cursorColor:  #e5e9f0
 
 ! black
-*.color0:       #4b5164
-*.color8:       #616981
+*.color0:       #4b5262
+*.color8:       #434a5a
 
 ! red
-*.color1:       #e14245
-*.color9:       #e16f7e
+*.color1:       #bf616a
+*.color9:       #b3555e
 
 ! green
-*.color2:       #5ca75b
-*.color10:      #add488
+*.color2:       #a3be8c
+*.color10:      #93ae7c
 
 ! yellow
-*.color3:       #f6ab32
-*.color11:      #fdc35f
+*.color3:       #ebcb8b
+*.color11:      #dbbb7b
 
 ! blue
-*.color4:       #4877b1
-*.color12:      #8ca9bf
+*.color4:       #81a1c1
+*.color12:      #7191b1
 
 ! magenta
-*.color5:       #a660c3
-*.color13:      #e2afec
+*.color5:       #b48ead
+*.color13:      #a6809f
 
 ! cyan
-*.color6:       #5294e2
-*.color14:      #73c5e2
+*.color6:       #89d0bA
+*.color14:      #7dbba8
 
 ! white
-*.color7:       #a9a9aa
-*.color15:      #fcfcfc
+*.color7:       #e5e9f0
+*.color15:      #d1d5dc
+
+!!arc-kde colorscheme
+!! special
+!*.foreground:   #d3dae3
+!*.background:   #383c4a
+!*.cursorColor:  #d3dae3
+!
+!! black
+!*.color0:       #4b5164
+!*.color8:       #616981
+!
+!! red
+!*.color1:       #e14245
+!*.color9:       #e16f7e
+!
+!! green
+!*.color2:       #5ca75b
+!*.color10:      #add488
+!
+!! yellow
+!*.color3:       #f6ab32
+!*.color11:      #fdc35f
+!
+!! blue
+!*.color4:       #4877b1
+!*.color12:      #8ca9bf
+!
+!! magenta
+!*.color5:       #a660c3
+!*.color13:      #e2afec
+!
+!! cyan
+!*.color6:       #5294e2
+!*.color14:      #73c5e2
+!
+!! white
+!*.color7:       #a9a9aa
+!*.color15:      #fcfcfc
 
 ! Black colorscheme
 !! special
