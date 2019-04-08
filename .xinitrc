@@ -23,6 +23,9 @@ sysmodmap=/etc/X11/xinit/.Xmodmap
 #xset +fp $HOME/.local/share/fonts
 #xset fp rehash
 
+# Disable beeping
+xset b off
+
 if grep -qe 'ThinkPad' /sys/devices/virtual/dmi/id/product_version; then
   # TrackPoint
   xinput set-prop "TPPS/2 IBM TrackPoint" "Evdev Wheel Emulation" 1
