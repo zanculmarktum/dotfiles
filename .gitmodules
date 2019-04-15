@@ -8,3 +8,6 @@
 [submodule ".vim/pack/pkg/opt/vim-session"]
 	path = .vim/pack/pkg/opt/vim-session
 	url = https://github.com/xolox/vim-session.git
+[submodule ".vim/pack/pkg/opt/airline"]
+	path = .vim/pack/pkg/opt/airline
+	url = https://github.com/vim-airline/vim-airline.git
