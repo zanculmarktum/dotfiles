@@ -11,3 +11,6 @@
 [submodule ".vim/pack/pkg/opt/airline"]
 	path = .vim/pack/pkg/opt/airline
 	url = https://github.com/vim-airline/vim-airline.git
+[submodule ".vim/pack/pkg/opt/airline-themes"]
+	path = .vim/pack/pkg/opt/airline-themes
+	url = https://github.com/vim-airline/vim-airline-themes.git
