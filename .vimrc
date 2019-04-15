@@ -140,6 +140,9 @@ nnoremap K :Man <cword><CR>
 if !has('gui_running')
 set term=xterm
 set background=dark
+let g:airline_symbols_ascii = 1
+let g:airline_left_sep='>'
+let g:airline_right_sep='<'
 packadd airline
 let g:airline#extensions#whitespace#mixed_indent_algo = 2
 let g:airline#extensions#whitespace#checks = ['indent', 'trailing']
