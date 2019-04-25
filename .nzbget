@@ -8,7 +8,7 @@
 #
 # On POSIX you can use "~" as alias for home directory (e.g. "~/downloads").
 # On Windows use absolute paths (e.g. "C:\Downloads").
-MainDir=~/downloads
+MainDir=~/nzbget
 
 # Destination directory for downloaded files.
 #
@@ -186,16 +186,16 @@ Server1.Optional=no
 Server1.Group=0
 
 # Host name of news server.
-Server1.Host=my.newsserver.com
+Server1.Host=free.xsusenet.com
 
 # Port to connect to (1-65535).
 Server1.Port=119
 
 # User name to use for authentication.
-Server1.Username=user
+Server1.Username=119453718894
 
 # Password to use for authentication.
-Server1.Password=pass
+Server1.Password=1fac9b7a2e
 
 # Server requires "Join Group"-command (yes, no).
 Server1.JoinGroup=no
@@ -1365,7 +1365,7 @@ ParPauseQueue=no
 # If the option <ParCheck> is set to "Auto" the program tries to unpack
 # downloaded files first. If the unpacking fails the par-check/repair
 # is performed and the unpack is executed again.
-Unpack=yes
+Unpack=no
 
 # Pause download queue during unpack (yes, no).
 #
@@ -1427,7 +1427,7 @@ SevenZipCmd=7z
 # characters * and ?.
 #
 # Example: .par2, .sfv
-ExtCleanupDisk=.par2, .sfv, _brokenlog.txt
+ExtCleanupDisk=.par2, _brokenlog.txt
 
 # Path to file containing unpack passwords.
 #
