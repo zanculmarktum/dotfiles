@@ -95,3 +95,6 @@
 # urxvt
 !.urxvt
 !.urxvt/**
+
+# nzbget
+!.nzbget
