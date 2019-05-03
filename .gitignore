@@ -98,3 +98,6 @@
 
 # nzbget
 !.nzbget
+
+# tmux
+!.tmux.conf
