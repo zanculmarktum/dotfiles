@@ -12,6 +12,9 @@ set colored-stats On
 # Case insensitive completion.
 set completion-ignore-case On
 
+# Fix Delete key issue on st
+set enable-keypad On
+
 # Search through history:
 "\C-n": history-search-forward
 "\C-p": history-search-backward
