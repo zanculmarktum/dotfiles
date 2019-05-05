@@ -5,7 +5,7 @@
 # +========================================================+
 # | Environment variables                                  |
 # +========================================================+
-export LANG="en_US.UTF-8"
+export LANG="C.UTF-8"
 export PATH="$HOME/.local/bin:$HOME/.node_modules/bin:$PATH"
 export MANPATH="$HOME/.local/man:$MANPATH"
 export EDITOR="vim"
