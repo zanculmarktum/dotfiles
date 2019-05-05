@@ -20,5 +20,7 @@ set enable-keypad On
 "\C-p": history-search-backward
 # down
 "\e[B": history-search-forward
+"\eOB": history-search-forward
 # up
 "\e[A": history-search-backward
+"\eOA": history-search-backward
