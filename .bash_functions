@@ -100,6 +100,10 @@ cd() {
 		DIR="$1"
 	fi
 	
+	if [[ x"$DIR"x == x"-"x ]]; then
+		DIR="+1"
+	fi
+
 	if [[ ! $DIR =~ ^\+[0-9]+ ]]; then
 		if [[ ! -e "$DIR" ]]; then
 			echo "bash: cd: $DIR: No such file or directory"
@@ -113,7 +117,7 @@ cd() {
 	if (($EXITCODE)); then
 		return $EXITCODE
 	fi
-	
+
 	builtin pushd "$DIR" > /dev/null 2>&1
 	
 	dups["$PWD"]=1
