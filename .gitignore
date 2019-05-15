@@ -101,3 +101,7 @@
 
 # tmux
 !.tmux.conf
+
+# gnupg
+!.gnupg
+!.gnupg/gpg.conf
