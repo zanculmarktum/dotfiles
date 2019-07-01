@@ -80,7 +80,11 @@ case $session in
     ck-launch-session dbus-launch --exit-with-session monsterwm
     ;;
   dwm)
-    exec ck-launch-session dwm
+    if [ -f /etc/slackware-version ]; then
+      exec ck-launch-session dwm
+    else
+      exec dwm
+    fi
     ;;
   wmii)
     ck-launch-session dbus-launch --exit-with-session wmii
