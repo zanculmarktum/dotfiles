@@ -29,11 +29,7 @@ export HISTFILESIZE=$HISTSIZE
 export HISTCONTROL=erasedups:ignoreboth
 
 shopt -s histappend                      # append to history, don't overwrite it
-if [[ -z "$PROMPT_COMMAND" ]]; then
-	export PROMPT_COMMAND="prompt; history -a; history -c; history -r"
-else
-	export PROMPT_COMMAND="prompt; history -a; history -c; history -r; $PROMPT_COMMAND"
-fi
+export PROMPT_COMMAND="prompt; history -a; history -c; history -r${PROMPT_COMMAND:+"; "}$PROMPT_COMMAND"
 
 # +========================================================+
 # | Colors                                                 |
