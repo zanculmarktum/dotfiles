@@ -6,7 +6,7 @@
 # | Environment variables                                  |
 # +========================================================+
 export LANG="C.UTF-8"
-export PATH="$HOME/.local/bin:$HOME/.node_modules/bin:$PATH"
+export PATH="$HOME/.local/bin:$HOME/.node_modules/bin:$HOME/.config/composer/vendor/bin${PATH:+":"}$PATH"
 export MANPATH="$HOME/.local/man:$MANPATH"
 export EDITOR="vim"
 #export LYNX_CFG="~/.lynx.cfg"
