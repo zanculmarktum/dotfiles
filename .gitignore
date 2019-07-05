@@ -106,3 +106,6 @@
 !.gnupg
 !.gnupg/gpg.conf
 !.gnupg/gpg-agent.conf
+
+# bash-completion
+!.bash_completion
