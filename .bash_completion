@@ -3,9 +3,15 @@
 _configured_interfaces()
 {
     if [[ -f /etc/debian_version ]]; then
+		interfaces_d=""
+		for i in /etc/network/interfaces.d/*; do
+			if [ -e "$i" ]; then
+				interfaces_d="$interfaces_d $i"
+			fi
+		done
         # Debian system
         COMPREPLY=( $( compgen -W "$( sed -ne 's|^iface \([^ ]\{1,\}\).*$|\1|p'\
-            /etc/network/interfaces /etc/network/interfaces.d/* )" -- "$cur" ) )
+            /etc/network/interfaces $interfaces_d )" -- "$cur" ) )
     elif [[ -f /etc/SuSE-release ]]; then
         # SuSE system
         COMPREPLY=( $( compgen -W "$( printf '%s\n' \
