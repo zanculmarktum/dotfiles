@@ -4,7 +4,7 @@
 config.source('nord-qutebrowser/nord-qutebrowser.py')
 
 #c.backend = 'webkit'
-c.url.searchengines = {'DEFAULT': 'https://duckduckgo.com/?q={}', 'g': 'https://www.google.com/search?q={}', 'sx': 'https://www.searx.me/?q={}'}
+c.url.searchengines = {'DEFAULT': 'https://www.searx.me/?q={}', 'd': 'https://duckduckgo.com/?q={}'}
 c.fonts.web.family.fixed = '"DejaVu Sans Mono"'
 c.fonts.web.family.sans_serif = 'Cantarell'
 c.fonts.web.family.serif = 'Cantarell'
