@@ -74,6 +74,7 @@
 # qutebrowser
 !.config/qutebrowser
 !.config/qutebrowser/config.py
+!.config/qutebrowser/nord-qutebrowser
 
 # termux
 !.termux

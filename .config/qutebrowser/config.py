@@ -1,6 +1,8 @@
 # Uncomment this to still load settings configured via autoconfig.yml
 # config.load_autoconfig()
 
+config.source('nord-qutebrowser/nord-qutebrowser.py')
+
 #c.backend = 'webkit'
 c.url.searchengines = {'DEFAULT': 'https://duckduckgo.com/?q={}', 'g': 'https://www.google.com/search?q={}', 'sx': 'https://www.searx.me/?q={}'}
 c.fonts.web.family.fixed = '"DejaVu Sans Mono"'

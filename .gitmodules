@@ -14,3 +14,6 @@
 [submodule ".vim/pack/pkg/opt/airline-themes"]
 	path = .vim/pack/pkg/opt/airline-themes
 	url = https://github.com/vim-airline/vim-airline-themes.git
+[submodule ".config/qutebrowser/nord-qutebrowser"]
+	path = .config/qutebrowser/nord-qutebrowser
+	url = https://github.com/Linuus/nord-qutebrowser.git
