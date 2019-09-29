@@ -8,7 +8,7 @@ c.url.searchengines = {'DEFAULT': 'https://duckduckgo.com/?q={}', 'g': 'https://
 c.fonts.web.family.fixed = '"DejaVu Sans Mono"'
 c.fonts.web.family.sans_serif = 'Cantarell'
 c.fonts.web.family.serif = 'Cantarell'
-c.fonts.web.family.standard = None
+c.fonts.web.family.standard = 'Cantarell'
 c.fonts.web.size.default = 12
 c.fonts.web.size.default_fixed = 12
 c.fonts.web.size.minimum = 12
