@@ -110,3 +110,6 @@
 
 # bash-completion
 !.bash_completion
+
+# dquilt
+!.quiltrc-dpkg
