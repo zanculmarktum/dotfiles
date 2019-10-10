@@ -125,8 +125,9 @@ endfunction
 cnoremap <C-P> <Up>
 cnoremap <C-N> <Down>
 
-" NFO
-"se fencs=cp43
+" NFO viewer
+"e ++enc=cp437
+"se fencs=cp437
 
 " Allows to read man page using :Man
 source $VIMRUNTIME/ftplugin/man.vim
