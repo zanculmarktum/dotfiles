@@ -4,8 +4,17 @@ GenericName=Web Browser
 Icon=qutebrowser
 Type=Application
 Categories=Network;WebBrowser;
-Exec=qutebrowser --enable-webengine-inspector %u
+Exec=qutebrowser --enable-webengine-inspector --qt-flag ignore-gpu-blacklist --qt-flag enable-gpu-rasterization --qt-flag enable-native-gpu-memory-buffers --qt-flag num-raster-threads=4 %u
 Terminal=false
 StartupNotify=false
 MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/rdf+xml;image/gif;image/jpeg;image/png;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/qute;
 Keywords=Browser
+Actions=new-window;preferences;
+
+[Desktop Action new-window]
+Name=New Window
+Exec=qutebrowser
+
+[Desktop Action preferences]
+Name=Preferences
+Exec=qutebrowser "qute://settings"
