@@ -75,6 +75,11 @@
 !.config/qutebrowser
 !.config/qutebrowser/config.py
 !.config/qutebrowser/nord-qutebrowser
+!.local
+!.local/share
+!.local/share/qutebrowser
+!.local/share/qutebrowser/userscripts
+!.local/share/qutebrowser/userscripts/mangadex
 
 # termux
 !.termux

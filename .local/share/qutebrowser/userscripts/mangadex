@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# MangaDex URL Grabber
+#
+# Usage:
+#   Login to https://mangadex.org/login
+#   Go to https://mangadex.org/settings and set "Reader:" to "Legacy"
+#   Open some chapter, e.g. https://mangadex.org/chapter/12345/1
+#   Execute this script:
+#     :spawn -u mangadex /path/to/file
+#   /path/to/file will contain image urls that you can download using wget
+
+output="$1"
+tmpfile=$QUTE_HTML
+
+if [ -z "$output" ]; then
+  exit 1
+fi
+
+dataurl=$(sed -ne "/^var dataurl = '.*/s/[^']*'\([^']*\)'.*$/\1/p" $tmpfile)
+
+ln=$(sed -ne "/^var page_array = \[/=" $tmpfile)
+ln=$(( $ln + 1 ))
+page_array=$(sed -ne "${ln},${ln}p" $tmpfile | sed -e "s/'[^']*$//" -e "s/'//g" -e "s/,/ /g")
+
+server=$(sed -ne "/^var server = '.*/s/[^']*'\([^']*\)'.*$/\1/p" $tmpfile)
+
+if [ -z "$dataurl" -o -z "$page_array" -o -z "$server" ]; then
+  exit 1
+fi
+
+>"$output"
+#echo "$QUTE_TITLE" >>"$output"
+for p in $page_array; do
+  echo "${server%/}/${dataurl%/}/${p}"
+done >>"$output"
