@@ -163,4 +163,8 @@ getcrx() {
 	}
 }
 
+homestead() {
+	( cd ~/Homestead && vagrant $* )
+}
+
 # vim:ft=sh
