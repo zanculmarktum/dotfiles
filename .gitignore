@@ -118,3 +118,9 @@
 
 # dquilt
 !.quiltrc-dpkg
+
+# vagrant
+!.local/share/bash-completion
+!.local/share/bash-completion/completions
+!.local/share/bash-completion/completions/vagrant
+!.local/share/bash-completion/completions/homestead
