@@ -69,7 +69,9 @@ prompt() {
 	if [[ "$UID" -eq 0 ]] || [[ "${LANG: -6}" != ".UTF-8" ]]; then
 		export PS1="${TITLEBAR}${ps_color}[\w]\\\$${normal} "
 	else
-		PS1="${TITLEBAR}${ps_color}┌─${ps_exitcode}[\w]${normal}
+		PS1=""
+		__git_ps1 "" "" "%s"
+		PS1="${TITLEBAR}${ps_color}┌─${ps_exitcode}[\w]${PS1:+" ["}${PS1}${PS1:+"${ps_color}]"}${normal}
 ${ps_color}└─▪${normal} "
 		PS2="└─▪ "
 		export PS1 PS2

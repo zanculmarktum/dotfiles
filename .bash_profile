@@ -20,6 +20,9 @@ export GEM_HOME=$(ruby -e 'print Gem.user_dir')
 export DEBEMAIL="zanculmarktum@gmail.com"
 export DEBFULLNAME="Azure Zanculmarktum"
 export npm_config_prefix=~/.node_modules
+export GIT_PS1_SHOWCOLORHINTS=true \
+	GIT_PS1_SHOWDIRTYSTATE=true \
+	GIT_PS1_SHOWUNTRACKEDFILES=true
 
 # +========================================================+
 # | History                                                |
