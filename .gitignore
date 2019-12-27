@@ -9,6 +9,8 @@
 !.vim
 !.vim/**
 .vim/undodir
+.vim/.netrwhist
+.vim/sessions/buffers.vim
 
 !.vimrc
 !.gvimrc
