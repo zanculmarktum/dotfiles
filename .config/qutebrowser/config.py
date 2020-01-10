@@ -9,6 +9,8 @@ c.url.searchengines = {
     'd': 'https://duckduckgo.com/?q={}',
     'x': 'https://www.searx.me/?q={}',
     's': 'https://saucenao.com/search.php?url={}',
+    'i': 'https://invidio.us/search?q={}',
+    'y': 'https://www.youtube.com/results?search_query={}',
 }
 c.fonts.web.family.fixed = '"DejaVu Sans Mono"'
 c.fonts.web.family.sans_serif = 'Cantarell'
