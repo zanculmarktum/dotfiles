@@ -8,6 +8,7 @@ c.url.searchengines = {
     'DEFAULT': 'https://startpage.com/do/search?query={}',
     'd': 'https://duckduckgo.com/?q={}',
     'x': 'https://www.searx.me/?q={}',
+    's': 'https://saucenao.com/search.php?url={}',
 }
 c.fonts.web.family.fixed = '"DejaVu Sans Mono"'
 c.fonts.web.family.sans_serif = 'Cantarell'
