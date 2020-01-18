@@ -16,7 +16,9 @@ export EDITOR="vim"
 export PYTHONSTARTUP=~/.pystartup
 export QT_QPA_PLATFORMTHEME=qt5ct
 #export QT_QPA_PLATFORMTHEME=gtk2
-export GEM_HOME=$(ruby -e 'print Gem.user_dir')
+if command -v ruby >/dev/null 2>&1; then
+	export GEM_HOME=$(ruby -e 'print Gem.user_dir')
+fi
 export DEBEMAIL="zanculmarktum@gmail.com"
 export DEBFULLNAME="Azure Zanculmarktum"
 export npm_config_prefix=~/.node_modules
