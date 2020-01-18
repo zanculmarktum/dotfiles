@@ -72,8 +72,8 @@ prompt() {
 		PS1=""
 		__git_ps1 "" "" "%s"
 		PS1="${TITLEBAR}${ps_color}┌─${ps_exitcode}[\w]${PS1:+" ["}${PS1}${PS1:+"${ps_color}]"}${normal}
-${ps_color}└─▪${normal} "
-		PS2="└─▪ "
+${ps_color}└─[\\\$]${normal} "
+		PS2="└─[\\\$] "
 		export PS1 PS2
 	fi
 }
