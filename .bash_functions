@@ -1,5 +1,5 @@
 # PS1
-prompt() {
+function prompt {
 	local exitcode="$?"
 
 #	local black="\[\e[0;30m\]"
@@ -78,7 +78,7 @@ ${ps_color}└─[\\\$]${normal} "
 	fi
 }
 
-#dirs() {
+#function dirs {
 #	local d i
 #	i=0
 #	for d in "${DIRSTACK[@]::10}"; do
@@ -88,7 +88,7 @@ ${ps_color}└─[\\\$]${normal} "
 #}
 
 # Stores cd in directory stack
-cd() {
+function cd {
 	local DIR
 	local EXITCODE=0
 	local d
@@ -136,7 +136,7 @@ cd() {
 }
 
 # ls recursively
-lr() {
+function lr {
 	if [[ -n "$1" ]]; then
 		find "$1" -mindepth 1 -exec ls --color=auto -d {} +
 	else
@@ -144,7 +144,7 @@ lr() {
 	fi
 }
 
-getcrx() {
+function getcrx {
 	echo 'https://clients2.google.com/service/update2/crx?response=redirect&x=id%3D'"$1"'%26uc&prodversion=32'
 }
 
@@ -156,7 +156,7 @@ getcrx() {
 		exit 1
 	fi
 ) && {
-	package_name() {
+	function package_name {
 		local NAME="${1##*/}"
 		NAME="${NAME%-*}"
 		NAME="${NAME%-*}"
@@ -165,11 +165,11 @@ getcrx() {
 	}
 }
 
-homestead() {
+function homestead {
 	( cd ~/Homestead && vagrant $* )
 }
 
-urlencode() {
+function urlencode {
 	# urlencode <string>
 	old_lc_collate=$LC_COLLATE
 	LC_COLLATE=C
@@ -187,7 +187,7 @@ urlencode() {
 	LC_COLLATE=$old_lc_collate
 }
 
-urldecode() {
+function urldecode {
 	# urldecode <string>
 
 	local url_encoded="${1//+/ }"
