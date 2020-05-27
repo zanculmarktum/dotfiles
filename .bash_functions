@@ -70,8 +70,10 @@ function prompt {
 		export PS1="${TITLEBAR}${ps_color}[\w]\\\$${normal} "
 	else
 		PS1=""
-		__git_ps1 "" "" "%s"
-		PS1="${TITLEBAR}${ps_color}┌─${ps_exitcode}[\w]${PS1:+" ["}${PS1}${PS1:+"${ps_color}]"}${normal}
+		if command -v __git_ps1 >/dev/null 2>&1; then
+			__git_ps1 "" "" "%s"
+		fi
+		PS1="${TITLEBAR}${ps_color}┌─${ps_exitcode}[\w]${PS1:+" [${PS1}${ps_color}]"}${normal}
 ${ps_color}└─[\\\$]${normal} "
 		PS2="└─[\\\$] "
 		export PS1 PS2
