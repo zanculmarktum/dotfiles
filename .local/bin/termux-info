@@ -1,0 +1,25 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+if [ -z "$(command -v termux-setup-storage)" ]; then
+	exit
+fi
+
+if [ "$#" != "0" ]; then
+	echo 'usage: termux-info'
+	echo 'Provides information about Termux, and the current system. Helpful for debugging.'
+	exit
+fi
+
+output="Packages CPU architecture:
+$(dpkg --print-architecture)
+Android version:
+$(getprop ro.build.version.release)
+Kernel build information:
+$(uname -a)
+Device manufacturer:
+$(getprop ro.product.manufacturer)
+Device model:
+$(getprop ro.product.model)"
+echo "$output"
+
+exit 0
