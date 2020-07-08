@@ -196,4 +196,8 @@ function urldecode {
 	printf '%b\n' "${url_encoded//%/\\x}"
 }
 
+function ypath {
+	printf "$(realpath -s "$1")" | xclip -sel c
+}
+
 # vim:ft=sh
