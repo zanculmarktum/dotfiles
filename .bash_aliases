@@ -49,7 +49,7 @@ alias urlencode='php -r '"'"'echo urlencode(fgets(STDIN));'"' <<<"
 alias urldecode='php -r '"'"'echo urldecode(fgets(STDIN));'"' <<<"
 
 # Yanks PWD
-alias ywd='echo -n "$PWD" | xsel -b'
+alias ywd='printf "$PWD" | xclip -sel c'
 
 # Appends line number
 #alias dirs='dirs -v | head -n 10'
