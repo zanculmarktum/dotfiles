@@ -22,7 +22,7 @@ alias clear='printf '"'"'\x1bc'"'"
 
 # Haha, no more `sudo /sbin/poweroff|reboot' shit
 if [[ $UID -ne 0 ]]; then
-	if [[ -e "/lib/systemd/systemd" ]]; then
+	if command -v systemctl >/dev/null 2>&1; then
 		alias poweroff='systemctl poweroff'
 		alias reboot='systemctl reboot'
 		alias suspend='systemctl suspend'
