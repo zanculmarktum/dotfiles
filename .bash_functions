@@ -200,4 +200,13 @@ function ypath {
 	printf "$(realpath -s "$1")" | xclip -sel c
 }
 
+function tmux-kill {
+    for i in $(tmux ls -F '#S'); do
+        tmux kill-session -t $i
+    done
+}
+
 # vim:ft=sh
+# Local Variables:
+# mode: Shell-script
+# End:
