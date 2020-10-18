@@ -206,6 +206,12 @@ function tmux-kill {
     done
 }
 
+# Usage: echo -n 'λ' | unicode-hex
+function unicode-hex {
+    printf '%s' '\u'
+    iconv -f UTF8 -t ISO-10646 | xxd -s 2 -ps
+}
+
 # vim:ft=sh
 # Local Variables:
 # mode: Shell-script
