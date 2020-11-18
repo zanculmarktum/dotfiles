@@ -205,3 +205,7 @@
 
 ;; Treat alacritty like screen
 ;;(add-to-list 'term-file-aliases '("alacritty" . "screen"))
+
+;; Set CC Mode indentation
+(add-hook 'c-mode-common-hook (lambda ()
+                                (setq c-basic-offset 4)))
