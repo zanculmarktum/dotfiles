@@ -209,3 +209,7 @@
 ;; Set CC Mode indentation
 (add-hook 'c-mode-common-hook (lambda ()
                                 (setq c-basic-offset 4)))
+
+;; Set sh-script mode indentation
+;;(add-hook 'sh-mode-hook (lambda ()
+;;                  (setq sh-basic-offset 2)))
