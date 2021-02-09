@@ -213,3 +213,7 @@
 ;; Set sh-script mode indentation
 ;;(add-hook 'sh-mode-hook (lambda ()
 ;;                  (setq sh-basic-offset 2)))
+
+;; Fixes TRAMP hangs
+(setq tramp-shell-prompt-pattern (concat "\\(?:^\\|\r\\)"
+                                         "[^]#$%>\n]*#?[]#$%>].* *\\(\e\\[[0-9;]*[a-zA-Z] *\\)*"))
