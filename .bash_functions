@@ -3,23 +3,23 @@ function prompt {
 	local exitcode="$?"
 
 #	local black="\[\e[0;30m\]"
-	local red="\[\e[0;31m\]"
+#	local red="\[\e[0;31m\]"
 #	local green="\[\e[0;32m\]"
 #	local yellow="\[\e[0;33m\]"
 #	local blue="\[\e[0;34m\]"
 #	local purple="\[\e[0;35m\]"
 #	local cyan="\[\e[0;36m\]"
-	local white="\[\e[0;37;1m\]"
+#	local white="\[\e[0;37m\]"
 #	local orange="\[\e[0;91m\]"
 #
 #	local bold_black="\[\e[30;1m\]"
-#	local bold_red="\[\e[31;1m\]"
+	local bold_red="\[\e[31;1m\]"
 #	local bold_green="\[\e[32;1m\]"
 #	local bold_yellow="\[\e[33;1m\]"
 #	local bold_blue="\[\e[34;1m\]"
 #	local bold_purple="\[\e[35;1m\]"
 #	local bold_cyan="\[\e[36;1m\]"
-#	local bold_white="\[\e[37;1m\]"
+	local bold_white="\[\e[37;1m\]"
 #	local bold_orange="\[\e[91;1m\]"
 #
 #	local underline_black="\[\e[30;4m\]"
@@ -58,11 +58,11 @@ function prompt {
 			;;
 	esac
 
-	ps_color="$white"
+	ps_color="$bold_white"
 	ps_exitcode=""
 	#                                  148 = ^Z                      130 = ^C
 	if [[ "$exitcode" != "0" ]] && [[ "$exitcode" != "148" ]] && [[ "$exitcode" != "130" ]]; then
-		ps_color="$red"
+		ps_color="$bold_red"
 		ps_exitcode="[\$?]"
 	fi
 
@@ -73,7 +73,7 @@ function prompt {
 		if command -v __git_ps1 >/dev/null 2>&1; then
 			__git_ps1 "" "" "%s"
 		fi
-		PS1="${TITLEBAR}${ps_color}┌─${ps_exitcode}[\w]${PS1:+" [${PS1}${ps_color}]"}${normal}
+		PS1="${TITLEBAR}${ps_color}┌─${ps_exitcode}[\w]${SSH_CLIENT:+" [ssh: $HOSTNAME]"}${PS1:+" [${PS1}${ps_color}]"}${normal}
 ${ps_color}└─[\\\$]${normal} "
 		PS2="└─[\\\$] "
 		export PS1 PS2
