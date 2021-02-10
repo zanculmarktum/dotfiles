@@ -138,3 +138,7 @@
 
 # emacs
 !.emacs
+
+# termite
+!.config/termite
+!.config/termite/config
