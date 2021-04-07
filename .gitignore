@@ -142,3 +142,7 @@
 # termite
 !.config/termite
 !.config/termite/config
+
+# xmonad
+!.xmonad
+!.xmonad/xmonad.hs
