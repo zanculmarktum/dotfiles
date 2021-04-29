@@ -11,9 +11,15 @@ import XMonad.Layout.LayoutModifier
 import XMonad.Prompt
 import XMonad.Prompt.XMonad
 
-import XMonad.Hooks.EwmhDesktops hiding ( ewmh, ewmhDesktopsStartup )
+import XMonad.Hooks.EwmhDesktops hiding ( ewmh, ewmhDesktopsStartup, fullscreenEventHook )
 import XMonad.Hooks.SetWMName
 import qualified XMonad.StackSet as W
+import XMonad.Util.XUtils ( fi )
+import XMonad.Util.WindowProperties ( getProp32 )
+import Control.Monad
+import Data.List
+import Data.Maybe
+import Data.Monoid
 
 import XMonad.Layout.NoBorders
 
@@ -31,7 +37,7 @@ import System.Posix.Types
 import Control.Concurrent ( threadDelay )
 
 -- Remember the spawned PIDs.
-data SpawnedPIDs = SpawnedPIDs [ProcessID] deriving ( Typeable, Read, Show )
+data SpawnedPIDs = SpawnedPIDs [ProcessID] deriving (Typeable, Read, Show)
 
 instance ExtensionClass SpawnedPIDs where
   initialValue = SpawnedPIDs []
@@ -40,21 +46,46 @@ instance ExtensionClass SpawnedPIDs where
 fromSpawnedPIDs :: SpawnedPIDs -> [ProcessID]
 fromSpawnedPIDs (SpawnedPIDs pids) = pids
 
+modifySpawnedPIDs :: (SpawnedPIDs -> SpawnedPIDs) -> X ()
+modifySpawnedPIDs = XS.modify
+
+spawnedPIDsInsert :: SpawnedPIDs -> ProcessID -> SpawnedPIDs
+spawnedPIDsInsert (SpawnedPIDs pids) pid = SpawnedPIDs $ pid : pids
+
 spawnState :: String -> X ()
 spawnState cmd = do
   pid <- spawnPID cmd
-  pids <- fromSpawnedPIDs <$> XS.get
-  XS.put (SpawnedPIDs $ pids ++ [pid])
+  modifySpawnedPIDs $ \pids -> spawnedPIDsInsert pids pid
+
+killPID :: ProcessID -> X ()
+killPID pid = io $ do
+  signalProcess sigTERM pid
+  -- threadDelay 50000
 
 killPIDs :: X ()
 killPIDs = do
-    pids <- fromSpawnedPIDs <$> XS.get
-    io $ mapM_ kill pids
-    XS.put (SpawnedPIDs [])
-  where
-    kill pid = do
-      signalProcess sigTERM pid
-      --threadDelay 50000
+  mapM_ killPID =<< fromSpawnedPIDs <$> XS.get
+  modifySpawnedPIDs $ const $ SpawnedPIDs []
+
+-- Remember floating windows positions
+data FloatingRectangle = FloatingRectangle (M.Map Window W.RationalRect)
+  deriving (Typeable, Read, Show)
+
+instance ExtensionClass FloatingRectangle where
+  initialValue = FloatingRectangle M.empty
+  extensionType = PersistentExtension
+
+fromFloatRect :: FloatingRectangle -> M.Map Window W.RationalRect
+fromFloatRect (FloatingRectangle m) = m
+
+getFloatRect :: X FloatingRectangle
+getFloatRect = XS.get
+
+modifyFloatRect :: (FloatingRectangle -> FloatingRectangle) -> X ()
+modifyFloatRect = XS.modify
+
+floatRectInsert :: FloatingRectangle -> Window -> W.RationalRect -> FloatingRectangle
+floatRectInsert (FloatingRectangle m) w r = FloatingRectangle $ M.insert w r m
 
 ewmh :: XConfig a -> XConfig a
 ewmh c = c { startupHook     = startupHook c +++ ewmhDesktopsStartup
@@ -88,6 +119,47 @@ setSupported = withDisplay $ \dpy -> do
 
     setWMName "xmonad"
 
+fullscreenEventHook :: Event -> X All
+fullscreenEventHook (ClientMessageEvent _ _ _ dpy win typ (action:dats)) = do
+  wmstate <- getAtom "_NET_WM_STATE"
+  fullsc <- getAtom "_NET_WM_STATE_FULLSCREEN"
+  wstate <- fromMaybe [] `fmap` getProp32 wmstate win
+
+  let isFull = fromIntegral fullsc `elem` wstate
+
+      -- Constants for the _NET_WM_STATE protocol:
+      remove = 0
+      add = 1
+      toggle = 2
+      ptype = 4 -- The atom property type for changeProperty
+      chWstate f = io $ changeProperty32 dpy win wmstate ptype propModeReplace (f wstate)
+
+      fullRect = W.RationalRect 0 0 1 1
+      noRect = W.RationalRect (-100) (-100) (-100) (-100)
+
+  do
+    rect <- withWindowSet $ pure . M.findWithDefault noRect win . W.floating
+
+    when (rect /= fullRect && rect /= noRect) $
+      modifyFloatRect $ \x -> floatRectInsert x win rect
+
+  rect <- M.findWithDefault noRect win <$> fromFloatRect <$> getFloatRect
+
+  when (typ == wmstate && fi fullsc `elem` dats) $ do
+    when (action == add || (action == toggle && not isFull)) $ do
+      chWstate (fi fullsc:)
+      windows $ W.float win fullRect
+    when (action == remove || (action == toggle && isFull)) $ do
+      chWstate $ delete (fi fullsc)
+      when (rect /= fullRect && rect /= noRect) $
+        windows $ W.float win rect
+      when (rect == noRect) $
+        windows $ W.sink win
+
+  return $ All True
+
+fullscreenEventHook _ = return $ All True
+
 xmobar :: LayoutClass l Window
        => XConfig l -> IO (XConfig (ModifiedLayout AvoidStruts l))
 xmobar conf = statusBar "xmobar"
@@ -111,6 +183,7 @@ main = xmonad =<< (xmobar . ewmh) def
   , terminal           = "termite"
   , layoutHook         = lessBorders OnlyScreenFloat tiled ||| Mirror tiled ||| Full
   , manageHook         = composeAll [ className =? "mpv" --> doFloat
+                                    , className =? "Sxiv" --> doCenterFloat
                                     , isDialog --> doCenterFloat
                                     , isFullscreen --> doFullFloat
                                     , checkDock --> doLower
