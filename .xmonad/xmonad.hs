@@ -37,7 +37,7 @@ import System.Posix.Types
 import Control.Concurrent ( threadDelay )
 
 -- Remember the spawned PIDs.
-data SpawnedPIDs = SpawnedPIDs [ProcessID] deriving (Typeable, Read, Show)
+newtype SpawnedPIDs = SpawnedPIDs [ProcessID] deriving (Typeable, Read, Show)
 
 instance ExtensionClass SpawnedPIDs where
   initialValue = SpawnedPIDs []
@@ -64,11 +64,11 @@ killPID pid = io $ do
 
 killPIDs :: X ()
 killPIDs = do
-  mapM_ killPID =<< fromSpawnedPIDs <$> XS.get
+  mapM_ killPID . fromSpawnedPIDs =<< XS.get
   modifySpawnedPIDs $ const $ SpawnedPIDs []
 
 -- Remember floating windows positions
-data FloatingRectangle = FloatingRectangle (M.Map Window W.RationalRect)
+newtype FloatingRectangle = FloatingRectangle (M.Map Window W.RationalRect)
   deriving (Typeable, Read, Show)
 
 instance ExtensionClass FloatingRectangle where
@@ -143,7 +143,7 @@ fullscreenEventHook (ClientMessageEvent _ _ _ dpy win typ (action:dats)) = do
     when (rect /= fullRect && rect /= noRect) $
       modifyFloatRect $ \x -> floatRectInsert x win rect
 
-  rect <- M.findWithDefault noRect win <$> fromFloatRect <$> getFloatRect
+  rect <- M.findWithDefault noRect win . fromFloatRect <$> getFloatRect
 
   when (typ == wmstate && fi fullsc `elem` dats) $ do
     when (action == add || (action == toggle && not isFull)) $ do
@@ -180,14 +180,17 @@ main :: IO ()
 main = xmonad =<< (xmobar . ewmh) def
   { normalBorderColor  = "#a6a6a6"
   , focusedBorderColor = "#e5e9f0"
-  , terminal           = "termite"
+  , terminal           = "alacritty"
   , layoutHook         = lessBorders OnlyScreenFloat tiled ||| Mirror tiled ||| Full
-  , manageHook         = composeAll [ className =? "mpv" --> doFloat
-                                    , className =? "Sxiv" --> doCenterFloat
-                                    , isDialog --> doCenterFloat
-                                    , isFullscreen --> doFullFloat
-                                    , checkDock --> doLower
-                                    ]
+  , manageHook         = let doWindow f = map ((--> f) . (className =?))
+                             float = doWindow doFloat
+                             centerFloat = doWindow doCenterFloat
+                         in composeAll (float ["mpv"]
+                                        ++ centerFloat ["Sxiv","Zathura","Org.gnome.Nautilus"]
+                                        ++ [ isDialog --> doCenterFloat
+                                           , isFullscreen --> doFullFloat
+                                           , checkDock --> doLower
+                                           ])
                          -- <+> doCenterFloat
                          <+> manageHook def
   , handleEventHook    = fullscreenEventHook <+> handleEventHook def
