@@ -10,6 +10,10 @@ font:
 
   size: 9.5
 
+key_bindings:
+  - { key: Up,    mods: Control|Shift,   action: ScrollLineUp,   mode: ~Alt    }
+  - { key: Down,  mods: Control|Shift,   action: ScrollLineDown, mode: ~Alt    }
+
 # Copyright (c) 2017-present Arctic Ice Studio <development@arcticicestudio.com>
 # Copyright (c) 2017-present Sven Greb <code@svengreb.de>
 
