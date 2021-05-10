@@ -151,3 +151,7 @@
 !.config/xmobar
 !.config/xmobar/xmobarrc
 !.config/xmobar/padding-icon.sh
+
+# alacritty
+!.config/alacritty
+!.config/alacritty/alacritty.yml
