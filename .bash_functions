@@ -50,7 +50,7 @@ function prompt {
 	local ps_exitcode
 
 	case "$TERM" in
-		xterm*|rxvt-*|st-*|screen)
+		xterm*|rxvt-*|st-*|alacritty|screen)
 			TITLEBAR="\[\033]0;\w\007\]"
 			;;
 		*)
