@@ -217,3 +217,8 @@
 ;; Fixes TRAMP hangs
 (setq tramp-shell-prompt-pattern (concat "\\(?:^\\|\r\\)"
                                          "[^]#$%>\n]*#?[]#$%>].* *\\(\e\\[[0-9;]*[a-zA-Z] *\\)*"))
+
+;; Insert numbers from n to m
+(defun insert-number (n m)
+  (dolist (x (number-sequence n m))
+    (insert (concat (int-to-string x) "\n"))))
