@@ -3,7 +3,19 @@
 module Main where
 
 import Termonad
+import Termonad.Prelude ( void, readMVar, fromMaybe )
 import Termonad.Config.Colour
+
+import Termonad.Types
+import Termonad.Lenses ( lensTMStateAppWin )
+import GI.Gtk ( windowSetTitle )
+import GI.Vte
+  ( Terminal
+  , onTerminalWindowTitleChanged
+  , terminalGetWindowTitle
+  )
+import Control.Lens ( (^.) )
+
 import Data.Text ( unpack )
 
 printConfigOptions :: ConfigOptions -> IO ()
@@ -93,7 +105,22 @@ configOptions =
     , showMenu = False
     , cursorBlinkMode = CursorBlinkModeOff }
 
+-- Taken from https://github.com/cdepillabout/termonad/issues/186
+customCreateTermHook :: TMState -> Terminal -> IO ()
+customCreateTermHook tmState vteTerm = do
+  void $ onTerminalWindowTitleChanged vteTerm $ do
+    maybeTitle <- terminalGetWindowTitle vteTerm
+    let title = fromMaybe "shell" maybeTitle
+
+    tmState <- readMVar tmState
+    let win = tmState ^. lensTMStateAppWin
+
+    windowSetTitle win title
+
+config :: TMConfig
+config = TMConfig
+  configOptions
+  (ConfigHooks customCreateTermHook) -- defaultConfigHooks
+
 main :: IO ()
 main = start . addColourExtension config =<< createColourExtension nord
-  where
-    config = TMConfig configOptions defaultConfigHooks
