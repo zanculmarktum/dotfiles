@@ -180,14 +180,15 @@ main :: IO ()
 main = xmonad =<< (xmobar . ewmh) def
   { normalBorderColor  = "#a6a6a6"
   , focusedBorderColor = "#e5e9f0"
-  , terminal           = "alacritty"
+  , terminal           = "termonad"
   , layoutHook         = lessBorders OnlyScreenFloat tiled ||| Mirror tiled ||| Full
   , manageHook         = let doWindow f = map ((--> f) . (className =?))
                              float = doWindow doFloat
                              centerFloat = doWindow doCenterFloat
                          in composeAll (float ["mpv"]
                                         ++ centerFloat ["Sxiv","Zathura","Org.gnome.Nautilus"]
-                                        ++ [ isDialog --> doCenterFloat
+                                        ++ [ stringProperty "_GTK_APPLICATION_ID" =? "io.otsaloma.gaupol" --> doFloat
+                                           , isDialog --> doCenterFloat
                                            , isFullscreen --> doFullFloat
                                            , checkDock --> doLower
                                            ])
