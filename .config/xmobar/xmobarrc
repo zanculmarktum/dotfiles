@@ -18,6 +18,8 @@ Config { font = "xft:Terminus:size=8"
                                    "--high","green"] 10
                     , Run Network "wlp1s0" ["-L","0","-H","32",
                                             "--normal","green","--high","red"] 10
+                    , Run Network "eno0" ["-L","0","-H","32",
+                                            "--normal","green","--high","red"] 10
                     , Run Cpu ["-L","3","-H","50",
                                "--normal","green","--high","red"] 10
                     , Run Memory ["-t","Mem: <usedratio>%"] 10
