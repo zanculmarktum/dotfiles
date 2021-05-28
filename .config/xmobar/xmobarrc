@@ -28,8 +28,11 @@ Config { font = "xft:Terminus:size=8"
                     , Run Date "%a %b %_d %Y %H:%M:%S" "date" 10
                     , Run StdinReader
                     , Run Com ".config/xmobar/padding-icon.sh" ["panel"] "trayer" 10
+                    , Run CoreTemp ["-t", "Temp: <core0>C",
+                                    "-L", "40", "-H", "60",
+                                    "-l", "lightblue", "-h", "red"] 50
                     ]
        , template = " %StdinReader% }{ \
-                    \%wlp1s0% | %battery% | %cpu% | %memory% * %swap% | %date% %trayer%"
+                    \%wlp1s0% | %battery% | %cpu% | %coretemp% | %memory% * %swap% | %date% %trayer%"
 --                  " <icon=.config/xmobar/haskell_20.xpm/> | "
        }
