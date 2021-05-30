@@ -82,13 +82,9 @@ ${ps_color}└─[\\\$]${normal} "
 
 # Push cd'ed directories into stack
 function cd {
-    local dir i n found
+    local dir _dirstack d i n found
 
     dir="$1"
-
-    if [[ ! "$dir" ]]; then
-        dir="$HOME"
-    fi
 
     if [[ "$dir" =~ ^\+([0-9]+)$ ]]; then
         n="${BASH_REMATCH[1]}"
@@ -98,18 +94,45 @@ function cd {
         dir="${DIRSTACK[1]}"
         popd +1 >/dev/null
     else
-        found=0
-        i=0
-        while (( "$i" < "${#DIRSTACK[@]}" )); do
-            if [[ "${DIRSTACK[$i]}" == "$dir" ]]; then
-                found=1
+        if [[ ! "$dir" ]]; then
+            dir="$HOME"
+        fi
+
+        if [[ "$dir" =~ ^~(.*) ]]; then
+            dir="$HOME${BASH_REMATCH[1]}"
+        fi
+
+        while :; do
+            if [[ "$dir" =~ (.*)/$ ]]; then
+                dir="${BASH_REMATCH[1]}"
+            else
                 break
             fi
+        done
+
+        _dirstack=("${DIRSTACK[@]}")
+        i=0
+        while (( "$i" < "${#_dirstack[@]}" )); do
+            d="${_dirstack[$i]}"
+
+            if [[ "$d" =~ ^~(.*) ]]; then
+                d="$HOME${BASH_REMATCH[1]}"
+            fi
+
+            while :; do
+                if [[ "$d" =~ (.*)/$ ]]; then
+                    d="${BASH_REMATCH[1]}"
+                else
+                    break
+                fi
+            done
+
+            if [[ "$d" == "$dir" ]]; then
+                popd "+$i" >/dev/null
+            fi
+
             i=$(( $i + 1 ))
         done
-        if (( $found )); then
-            popd "+$i" >/dev/null
-        fi
     fi
 
     if (( "${#DIRSTACK[@]}" >= "10" )); then
@@ -192,6 +215,17 @@ function tmux-kill {
 function unicode-hex {
     printf '%s' '\u'
     iconv -f UTF8 -t ISO-10646 | xxd -s 2 -ps
+}
+
+function e {
+    local TMP;
+    if [[ "$1" == "-" ]]; then
+        TMP="$(mktemp /tmp/emacsstdinXXX)";
+        cat >"$TMP";
+        emacsclient -nw --eval "(let ((b (create-file-buffer \"*stdin*\"))) (switch-to-buffer b) (insert-file-contents \"${TMP}\") (delete-file \"${TMP}\"))"
+    else
+        emacsclient -nw "$@"
+    fi;
 }
 
 # vim:ft=sh
