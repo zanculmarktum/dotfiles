@@ -110,6 +110,8 @@ function cd {
             fi
         done
 
+        dir=$(builtin cd "$dir" && pwd)
+
         _dirstack=("${DIRSTACK[@]}")
         i=0
         while (( "$i" < "${#_dirstack[@]}" )); do
