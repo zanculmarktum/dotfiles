@@ -89,10 +89,10 @@ function cd {
     if [[ "$dir" =~ ^\+([0-9]+)$ ]]; then
         n="${BASH_REMATCH[1]}"
         dir="${DIRSTACK[$n]}"
-        popd "+$n" >/dev/null
+        popd -n "+$n" >/dev/null
     elif [[ "$dir" =~ ^-$ ]]; then
         dir="${DIRSTACK[1]}"
-        popd +1 >/dev/null
+        popd -n +1 >/dev/null
     else
         if [[ ! "$dir" ]]; then
             dir="$HOME"
@@ -110,7 +110,7 @@ function cd {
             fi
         done
 
-        dir=$(builtin cd "$dir" && pwd)
+        dir=$(readlink -f "$dir")
 
         _dirstack=("${DIRSTACK[@]}")
         i=0
@@ -129,8 +129,10 @@ function cd {
                 fi
             done
 
+            d=$(readlink -f "$d")
+
             if [[ "$d" == "$dir" ]]; then
-                popd "+$i" >/dev/null
+                popd -n "+$i" >/dev/null
             fi
 
             i=$(( $i + 1 ))
@@ -138,10 +140,18 @@ function cd {
     fi
 
     if (( "${#DIRSTACK[@]}" >= "10" )); then
-        popd +9 >/dev/null
+        popd -n +9 >/dev/null
     fi
 
-    pushd "$dir" >/dev/null
+    if [[ -d "$dir" ]]; then
+        pushd "$dir" >/dev/null
+    elif [[ -f "$dir" ]]; then
+        echo >&2 "bash: cd: $dir: Not a directory"
+        return 1
+    else
+        echo >&2 "bash: cd: $dir: No such file or directory"
+        return 1
+    fi
 }
 
 # ls recursively
