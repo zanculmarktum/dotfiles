@@ -1,8 +1,7 @@
 -- -*- mode: Haskell -*-
 
 Config { font = "xft:Terminus:size=8"
-       --, additionalFonts = [ "xft:FontAwesome:pixelsize=13"
-       --                    ]
+       --, additionalFonts = ["xft:FontAwesome:pixelsize=13"]
        , bgColor = "#2e3440"
        , fgColor = "#e5e9f0"
        --, position = TopW L 90
