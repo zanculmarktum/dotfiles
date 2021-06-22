@@ -236,7 +236,11 @@ function e {
         cat >"$TMP";
         emacsclient -nw --eval "(let ((b (create-file-buffer \"*stdin*\"))) (switch-to-buffer b) (insert-file-contents \"${TMP}\") (delete-file \"${TMP}\"))"
     else
-        emacsclient -nw "$@"
+        if command -v emacsclient >/dev/null 2>&1; then
+            emacsclient -nw "$@"
+        elif command -v zile >/dev/null 2>&1; then
+            zile "$@"
+        fi
     fi;
 }
 
