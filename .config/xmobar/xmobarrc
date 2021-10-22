@@ -1,6 +1,6 @@
--- -*- mode: Haskell -*-
+-- -*- mode: haskell -*-
 
-Config { font = "xft:Terminus:size=8"
+Config { font = "xft:Terminus (TTF):size=9:antialias=false"
        --, additionalFonts = ["xft:FontAwesome:pixelsize=13"]
        , bgColor = "#2e3440"
        , fgColor = "#e5e9f0"
@@ -32,6 +32,6 @@ Config { font = "xft:Terminus:size=8"
                                     "-l", "lightblue", "-h", "red"] 50
                     ]
        , template = " %StdinReader% }{ \
-                    \%wlp1s0% | %battery% | %cpu% | %coretemp% | %memory% * %swap% | %date% %trayer%"
+                    \%wlp1s0% %eno0% | %battery% | %cpu% | %coretemp% | %memory% * %swap% | %date% %trayer%"
 --                  " <icon=.config/xmobar/haskell_20.xpm/> | "
        }
