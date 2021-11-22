@@ -70,3 +70,9 @@ alias clean='awk '"'"'{if(!_[$0]++){print}}'"'"
 alias screenfetch='screenfetch -d '"'"'-host;-res;-cpu;-gpu'"'"
 
 alias dquilt='quilt --quiltrc=${HOME}/.quiltrc-dpkg'
+
+alias ffplay='ffplay -hide_banner -autoexit'
+
+# Local Variables:
+# mode: shell-script
+# End:
