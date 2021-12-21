@@ -47,6 +47,8 @@
 !.config/mpv
 !.config/mpv/mpv.conf
 !.config/mpv/input.conf
+!.config/mpv/script-opts
+!.config/mpv/script-opts/osc.conf
 
 # fontconfig
 !.config/fontconfig
