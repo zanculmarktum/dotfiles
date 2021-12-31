@@ -22,6 +22,9 @@ fi
 export DEBEMAIL="zanculmarktum@gmail.com"
 export DEBFULLNAME="Azure Zanculmarktum"
 export npm_config_prefix=~/.node_modules
+export NODE_PATH="$HOME/.node_modules/lib/node_modules${NODE_PATH:+":$NODE_PATH"}"
+export NODE_REPL_MODE=strict
+export NODE_REPL_HISTORY_SIZE=100000
 export GIT_PS1_SHOWCOLORHINTS=true \
 	GIT_PS1_SHOWDIRTYSTATE=true \
 	GIT_PS1_SHOWUNTRACKEDFILES=true
