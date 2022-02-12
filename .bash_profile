@@ -5,10 +5,11 @@
 # +========================================================+
 # | Environment variables                                  |
 # +========================================================+
-export LANG="C.UTF-8"
-export PATH="$HOME/.local/bin:$HOME/.node_modules/bin:$HOME/.config/composer/vendor/bin${PATH:+":$PATH"}"
+#export LANG="C.UTF-8"
+export PATH="$HOME/.local/bin:$HOME/.cabal/bin:$HOME/.node_modules/bin:$HOME/.config/composer/vendor/bin${PATH:+":$PATH"}"
 export MANPATH="$HOME/.local/man:${MANPATH:+"$MANPATH"}"
-export EDITOR="vim"
+export EDITOR="emacsclient -nw"
+export BROWSER="chromium"
 #export LYNX_CFG="~/.lynx.cfg"
 #export LYNX_LSS="~/.lynx.lss"
 #export PYTHONDOCS="/usr/share/doc/python2/html/"
@@ -60,5 +61,5 @@ export GREP_COLORS="mt=37;45"
 # | Starts the X server                                    |
 # +========================================================+
 if [[ -t 0 ]] && [[ "$(tty)" == "/dev/tty1" ]] && [[ -z "$DISPLAY" ]] && [[ "$(id -u)" != "0" ]]; then
-  exec startx ~/.xinitrc xmonad -- -keeptty 2>~/.xsession-errors
+    exec startx ~/.xinitrc xmonad -- -keeptty 2>~/.xsession-errors
 fi
