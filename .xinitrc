@@ -17,7 +17,7 @@ fi
 #xset fp rehash
 
 # Fix xmonad "X" cursor issue
-#xsetroot -cursor_name left_ptr
+xsetroot -cursor_name left_ptr
 
 # Siji font
 #xset +fp $HOME/.local/share/fonts
@@ -103,6 +103,9 @@ case $session in
     ;;
   twm)
     ck-launch-session dbus-launch --exit-with-session twm
+    ;;
+  xmonad)
+    exec xmonad
     ;;
   # No known session, try to run it as command
   *) exec $1;;
