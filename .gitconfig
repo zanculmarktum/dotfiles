@@ -1,3 +1,5 @@
 [user]
 	email = zanculmarktum@gmail.com
 	name = Azure Zanculmarktum
+[init]
+	defaultBranch = master
