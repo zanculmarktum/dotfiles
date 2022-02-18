@@ -2,115 +2,451 @@
 (when (version< emacs-version "26.3")
   (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
-;; Load packages in ~/.emacs.d/packages/
-(dolist (x `(;;"evil" "undo-tree" "goto-chg"
-             ;;"evil-collection" "annalist"
-             ,(when (executable-find "xclip") "xclip")
-             "nix-mode"
-             "markdown-mode"
-             "highlight-indentation"
-             "indent-guide"
-             "powerline"
-             "yaml-mode"
-             "haskell-mode"
-             ;;"word-count-mode"
-             ;;"modeline-posn"
-             ;;"visual-regexp"
-             ;;"visual-regexp-steroids"
-             ;;"mic-paren"
-             "highlight-indent-guides"
-             "git-modes"
-             ;;"keycast"
-             ;;"keyfreq"
-             "command-log-mode"
-             "smartparens" "dash.el"
-             ))
-  (add-to-list 'load-path (locate-user-emacs-file (concat "packages/" x))))
+;; Prevent package.el loading packages prior to their init-file loading
+(when (version<= "27" emacs-version)
+  (setq package-enable-at-startup nil))
+
+(defvar bootstrap-version)
+(let* ((bootstrap-file
+        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+       (bootstrap-version 5)
+       (install-file
+        (concat (file-name-directory bootstrap-file) "install.el")))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://github.com/raxod502/straight.el/raw/master/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp))
+    ;;(load install-file nil 'nomessage)
+    )
+  (load bootstrap-file nil 'nomessage))
+
+(require 'straight-x)
+
+(defun straight-recipes-find (pat &optional print-repo)
+  (let* ((find (lambda (repo)
+                 (cl-remove-if (lambda (x) (not (string-match-p pat x)))
+                               (straight-recipes-list repo))))
+         (result (rassq-delete-all
+                  nil
+                  (cl-mapcar (lambda (x)
+                               (cons x (funcall find `(,x))))
+                             straight-recipe-repositories))))
+    (if print-repo
+        result
+      (cl-mapcan #'cdr result))))
+
+(defun fetch-file (url filename)
+  (fetch-content url filename))
+
+(defun fetch-content (url &optional filename)
+  (let ((max-retries 3)
+        (enable-local-variables nil)
+        (f (lambda (retry)
+             (if (= retry max-retries)
+                 (error (concat "Fetching failed after " max-retries " retries"))
+               (with-current-buffer (url-retrieve-synchronously url 'silent 'inhibit-cookies)
+                 ;; Clean up HTTP headers
+                 (goto-char (point-min))
+                 (if (search-forward-regexp "^$" nil t)
+                     (progn
+                       (flush-lines ".*" (point-min) (1+ (point)))
+                       (if filename
+                           (progn ;; Write to a file
+                             (let ((dir (file-name-directory filename)))
+                               (and dir (make-directory dir t)))
+                             (write-file filename))
+                         (replace-regexp-in-string
+                          "\n+$"
+                          ""
+                          (buffer-substring-no-properties (point-min) (point-max)))))
+                   (funcall f (1- retry))))))))
+    (funcall f 0)))
+
+(defun octal-to-int (number)
+  "Convert octal to integer.
+
+Example:
+
+   (octal-to-int 644) ⇒ 420"
+  (let ((f (lambda (number)
+             (let* ((p (floor (log (abs number) 10)))
+                    (d (funcall (if (natnump number) #'floor #'ceiling)
+                                number (expt 10 p)))
+                    (n (- number (* d (expt 10 p)))))
+               (if (zerop n)
+                   (* d (expt 8 p))
+                 (+ (* d (expt 8 p)) (funcall f n)))))))
+    (if (zerop number)
+        0
+      (funcall f number))))
+;; Test:
+;; (dolist (i (number-sequence -100 100)) (let ((n (string-to-number (format "%o" i)))) (message "%s -> %s" n (octal-to-int n))))
+
+(defun straight-get-files-wildcard (files prefix flavor)
+  (let ((f (lambda (files prefix flavor)
+             (unless (listp files)
+               (error "Invalid :files directive: %S" files))
+             (let ((mappings nil)
+                   (exclusions nil))
+               (while files
+                 (let ((spec (car files)))
+                   (setq files (cdr files))
+                   (cond
+                    ((eq spec :defaults)
+                     (setq files (append straight-default-files-directive files)))
+                    ((stringp spec)
+                     (setq files
+                           (nconc
+                            (list (let ((filename (file-name-nondirectory spec)))
+                                    (when (eq flavor 'melpa)
+                                      (setq filename
+                                            (replace-regexp-in-string
+                                             "\\.el\\.in\\'" ".el" filename 'fixedcase)))
+                                    (cons spec (concat prefix filename))
+                                    ))
+                            files)))
+                    ((not (consp spec))
+                     (error "Invalid entry in :files directive: %S" spec))
+                    ((eq (car spec) :exclude)
+                     (cl-destructuring-bind
+                         (rec-mappings . rec-exclusions)
+                         (funcall f (cdr spec) prefix flavor)
+                       (setq mappings (cl-remove-if
+                                       (lambda (mapping)
+                                         (assoc (car mapping) rec-mappings))
+                                       mappings))
+                       (dolist (mapping rec-mappings)
+                         (push (car mapping) exclusions))))
+                    ((consp (cdr spec))
+                     (unless (stringp (car spec))
+                       (error "Invalid sub-list head in :files directive: %S" (car spec)))
+                     (cl-destructuring-bind
+                         (rec-mappings . rec-exclusions)
+                         (funcall f (cdr spec) (concat prefix (car spec) "/") flavor)
+                       (setq mappings (cl-remove-if
+                                       (lambda (mapping)
+                                         (member (car mapping) rec-exclusions))
+                                       mappings))
+                       (dolist (mapping rec-mappings)
+                         (push mapping mappings))
+                       (dolist (exclusion rec-exclusions)
+                         (push exclusion exclusions))))
+                    ((or (not (stringp (car spec)))
+                         (not (stringp (cdr spec))))
+                     (error "Invalid entry in :files directive: %S" spec))
+                    (t
+                     (push spec mappings)))))
+               (cons (reverse mappings) (reverse exclusions))))))
+    (cl-mapcar #'car (car (funcall f files prefix flavor)))))
+;; (format "%s" (straight--with-plist (straight--convert-recipe 'stan-snippets) (files flavor) (straight-get-files-wildcard files "" flavor)))
+
+(defun straight--fetch-blobs-caller (f melpa-style-recipe)
+  (straight--with-plist (straight--convert-recipe melpa-style-recipe)
+      (type host branch repo local-repo files package flavor)
+    (unless (file-exists-p (straight--repos-dir local-repo))
+      (cl-mapcar #'(lambda (wildcard)
+                     (funcall f repo local-repo (or branch "master") nil wildcard)
+                     )
+                 (cl-mapcar #'listify-wildcard
+                            (straight-get-files-wildcard files "" flavor))))))
+
+(defun straight--fetch-github-blobs-internal (repo local-repo sha &optional path wildcard)
+  (let* ((first (or (car wildcard) "*"))
+         (rest (or (cdr wildcard) '("*")))
+         (default-directory (straight--repos-dir local-repo))
+         (process-hash (lambda (hash)
+                         (let* ((name (gethash "name" hash))
+                                (type (gethash "type" hash))
+                                (download-url (gethash "download_url" hash))
+                                (path (gethash "path" hash))
+                                ;;(target (gethash "target" hash))
+                                )
+                           (make-directory default-directory t)
+                           (when (wildcard-match-p first name)
+                             (cond ((string= type "file")
+                                    (fetch-file download-url path))
+                                   ((string= type "symlink")
+                                    (let ((target (fetch-content download-url)))
+                                      (make-symbolic-link target path)))
+                                   ((string= type "dir")
+                                    (straight--fetch-github-blobs-internal repo local-repo sha path rest)))))))
+         (max-retries 3)
+         (f (lambda (retry)
+              (cond ((= retry max-retries)
+                     (error (concat "Fetching failed after " max-retries " retries")))
+                    ((file-name-directory first)
+                     (straight--fetch-github-blobs-internal repo local-repo sha first rest))
+                    (t
+                     (with-current-buffer
+                         (url-retrieve-synchronously (concat "https://" (when github-api-token (concat github-api-token "@")) "api.github.com/repos/"
+                                                             repo "/contents/" path "?ref=" sha)
+                                                     'silent 'inhibit-cookies)
+                       ;; Clean up HTTP headers
+                       (goto-char (point-min))
+                       (if (search-forward-regexp "^$" nil t)
+                           (progn
+                             (flush-lines ".*" (point-min) (1+ (point)))
+                             (let ((json (json-parse-buffer)))
+                               (unless (and (hash-table-p json)
+                                            (string= (gethash "message" json) "Not Found"))
+                                 (cl-mapcar process-hash json))))
+                         (funcall f (1- retry)))))))))
+    (funcall f 0)))
+
+(defun straight-fetch-github-blobs (melpa-style-recipe)
+  (straight--fetch-blobs-caller #'straight--fetch-github-blobs-internal melpa-style-recipe))
+
+(defun straight--fetch-gitlab-blobs-internal (repo local-repo sha &optional path wildcard)
+  (let* ((first (or (car wildcard) "*"))
+         (rest (or (cdr wildcard) '("*")))
+         (pattern "\\(gitlab[^\x0]*\\.com\\)/\\([^/]*\\)/\\([^/.]*\\)\\(?:\\.git\\)?")
+         (host (if (string-match pattern repo)
+                   (match-string 1 repo)
+                 nil))
+         (owner (if (string-match pattern repo)
+                    (match-string 2 repo)
+                  (car (split-string repo "/"))))
+         (project (if (string-match pattern repo)
+                      (match-string 3 repo)
+                    (cadr (split-string repo "/"))))
+         (default-directory (straight--repos-dir local-repo))
+         (process-hash (lambda (hash)
+                         (let* ((name (gethash "name" hash))
+                                (type (gethash "type" hash))
+                                (id (gethash "id" hash))
+                                (path (gethash "path" hash))
+                                (download-url (concat "https://" (or host "gitlab.com")
+                                                      "/api/v4/projects/" owner "%2F" project
+                                                      "/repository/blobs/" id "/raw"))
+                                (mode (string-to-number (gethash "mode" hash) 8)))
+                           (make-directory default-directory t)
+                           (when (wildcard-match-p first name)
+                             (cond ((string= type "blob")
+                                    (if (= (logand (ash mode -12) 7) 2) ;; symlink?
+                                        (let ((target (fetch-content download-url)))
+                                          (make-symbolic-link target path))
+                                      (fetch-file download-url path)
+                                      (set-file-modes path (logand mode (1- (ash 1 12))))))
+                                   ((string= type "tree")
+                                    (straight--fetch-gitlab-blobs-internal repo local-repo sha path rest)))))))
+         (max-retries 3)
+         (f (lambda (retry)
+              (cond ((= retry max-retries)
+                     (error (concat "Fetching failed after " max-retries " retries")))
+                    ((file-name-directory first)
+                     (straight--fetch-gitlab-blobs-internal repo local-repo sha first rest))
+                    (t
+                     (with-current-buffer
+                         (url-retrieve-synchronously (concat "https://" (or host "gitlab.com")
+                                                             "/api/v4/projects/" owner "%2F" project
+                                                             "/repository/tree?ref=" sha
+                                                             (and path "&path=") path)
+                                                     'silent 'inhibit-cookies)
+                       ;; Clean up HTTP headers
+                       (goto-char (point-min))
+                       (if (search-forward-regexp "^$" nil t)
+                           (progn
+                             (flush-lines ".*" (point-min) (1+ (point)))
+                             (let ((json (json-parse-buffer)))
+                               (unless (eq json [])
+                                 (cl-mapcar process-hash json))))
+                         (funcall f (1- retry)))))))))
+    (funcall f 0)))
+
+(defun straight-fetch-gitlab-blobs (melpa-style-recipe)
+  (straight--fetch-blobs-caller #'straight--fetch-gitlab-blobs-internal melpa-style-recipe))
+
+(defun wildcardp (string)
+  (and (stringp string)
+       (string-match-p "[[.*+\\^$?]" string)))
+
+(defun wildcard-match-p (wildcard string)
+  (string-match-p (wildcard-to-regexp wildcard) string))
+
+(defun listify-wildcard (wildcard)
+  (let* ((listify (lambda (filename acc)
+                    (let* ((dirpart (file-name-directory filename))
+                           (nondir (file-name-nondirectory filename))
+                           (first (car acc))
+                           (rest (cdr acc))
+                           (result (if (or (and (wildcardp nondir) acc) (and first (wildcardp first)))
+                                       (cons nondir acc)
+                                     (cons (if first
+                                               (concat (file-name-as-directory nondir) first)
+                                             nondir)
+                                           rest))))
+                      (if dirpart
+                          (funcall listify (directory-file-name dirpart) result)
+                        result)))))
+    (when (file-name-absolute-p wildcard)
+      (error "The wildcard must be relative"))
+    (funcall listify wildcard '())))
+
+(straight-use-package 'use-package)
+
+(use-package nord-theme
+  :straight t
+  :config (load-theme 'nord t))
+;; To show currently enabled themes:
+;; M-: custom-enabled-themes
 
 (require 'info)
 (info-initialize)
 
-;;(require 'powerline)
-;;(powerline-default-theme)
-
-;;(require 'word-count)
-
-;;(require 'modeline-posn)
-
-;;(require 'visual-regexp)
-
-;;(require 'visual-regexp-steroids)
-
-;;(require 'mic-paren)
-;;(paren-activate)
+(use-package modeline-posn
+  :straight t
+  :config
+  (set-face-attribute 'modelinepos-region nil :inherit 'mode-line)
+  (set-face-attribute 'modelinepos-region-acting-on nil :inherit 'mode-line)
+  (set-face-attribute 'modelinepos-region-acting-on nil :box 'unspecified))
+;; To show current value:
+;; M-: (face-attribute 'modelinepos-region :inherit)
+;; M-: (face-all-attributes 'modelinepos-region)
 
 ;;(when (executable-find "xclip")
-;;  (require 'xclip)
-;;  (xclip-mode 1))
+;;  (use-package xclip
+;;    :straight t
+;;    :config (xclip-mode 1)))
 
-;;(require 'undo-tree)
-;;(global-undo-tree-mode)
+(use-package highlight-indent-guides
+  :straight t
+  :config
+  ;;(highlight-indent-guides-mode 1)
+  ;;(add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
 
-;;(setq evil-want-keybinding nil)
-;;(setq evil-want-C-u-scroll t)
-;;(require 'evil)
-;;;;(evil-set-initial-state 'ibuffer-mode 'normal)
-;;;;(evil-set-initial-state 'bookmark-bmenu-mode 'normal)
-;;;;(evil-set-initial-state 'dired-mode 'emacs)
-;;;;(evil-set-initial-state 'sunrise-mode 'emacs)
-;;;;(evil-set-initial-state 'help-mode 'emacs)
-;;;;(evil-set-initial-state 'Info-mode 'emacs)
-;;(evil-mode 1)
+  ;; Don't enable if the size of the file is too big
+  (add-hook 'find-file-hook
+            #'(lambda ()
+                (let ((size (file-attribute-size (file-attributes (buffer-name))))
+                      (large-file-warning-threshold 1000000))
+                  (unless (and large-file-warning-threshold size
+                               (> size large-file-warning-threshold))
+                    (highlight-indent-guides-mode 1)))))
 
-;;(require 'evil-collection)
-;;(evil-collection-init)
+  (setq highlight-indent-guides-method 'character)
+  (setq highlight-indent-guides-auto-enabled nil)
 
-(require 'highlight-indent-guides)
-;;(highlight-indent-guides-mode 1)
-;;(add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
-(setq highlight-indent-guides-method 'character)
-(setq highlight-indent-guides-auto-enabled nil)
-(set-face-foreground 'highlight-indent-guides-character-face "blue")
+  ;; Change the face in accordance with nord theme
+  (when (memq 'nord custom-enabled-themes)
+    (if (display-graphic-p)
+        (set-face-attribute 'highlight-indent-guides-character-face nil :foreground "#3b4252")
+      (set-face-attribute 'highlight-indent-guides-character-face nil :foreground "black"))
+    ;;(set-face-attribute 'highlight-indent-guides-character-face nil :foreground (face-attribute 'tty-menu-disabled-face :foreground))
+    )
 
-;;(require 'highlight-indentation)
-;;(add-hook 'prog-mode-hook 'highlight-indentation-mode)
-;;(dolist (x '(nix-mode-hook emacs-lisp-mode-hook))
-;;  (add-hook x (lambda ()
-;;                (make-local-variable 'highlight-indentation-offset)
-;;                (setq highlight-indentation-offset 2))))
+  ;; Delete " h-i-g" indicator from mode line
+  (setq minor-mode-alist (assoc-delete-all 'highlight-indent-guides-mode minor-mode-alist)))
+;; To show current value
+;; M-: (face-attribute 'highlight-indent-guides-character-face :foreground)
+;; M-: (face-all-attributes 'highlight-indent-guides-character-face)
 
-;;(require 'indent-guide)
-;;(indent-guide-global-mode)
+(use-package f
+  :straight t)
+(use-package nix-mode
+  :straight t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode))
+  (setq nix-indent-function 'nix-indent-line))
 
-(require 'nix-mode)
-(add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode))
+(use-package markdown-mode
+  :straight t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+  (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+  (add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode)))
 
-(require 'markdown-mode)
-(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
+(use-package yaml-mode
+  :straight t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
 
-(require 'yaml-mode)
-(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+(use-package git-modes
+  :straight t)
 
-(require 'git-modes)
+(use-package command-log-mode
+  :straight t
+  ;; :config (global-command-log-mode)
+  )
 
-(require 'command-log-mode)
-;;(global-command-log-mode)
+(use-package haskell-mode
+  :straight t
+  :config
+  ;;(require 'haskell-mode-autoloads)
+  ;;(add-to-list 'Info-directory-list
+  ;;             (expand-file-name "straight/repos/haskell-mode" user-emacs-directory))
+  )
 
-;;(require 'haskell-mode)
-(require 'haskell-mode-autoloads)
-(add-to-list 'Info-directory-list "~/.emacs.d/packages/haskell-mode")
+(straight-fetch-gitlab-blobs 'cmake-mode)
+(use-package cmake-mode
+  :straight t)
 
-;;(require 'dash)
-;;(require 'smartparens-config)
+(use-package tuareg
+  :straight t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.ml[ip]?\\'" . tuareg-mode))
+  (add-to-list 'auto-mode-alist '("\\.eliomi?\\'" . tuareg-mode))
+  (dolist (ext '(".cmo" ".cmx" ".cma" ".cmxa" ".cmi"
+                  ".annot" ".cmt" ".cmti"))
+    (add-to-list 'completion-ignored-extensions ext))
+  (add-to-list 'auto-mode-alist '("\\.ocamlinit\\'" . tuareg-mode)))
 
-;; Load themes in ~/.emacs.d/themes/
-(dolist (x `("nord-emacs"
-             ))
-  (add-to-list 'custom-theme-load-path (locate-user-emacs-file (concat "themes/" x))))
+(straight-fetch-github-blobs 'erlang)
+(use-package erlang
+  :straight t
+  :config (require 'erlang-start))
 
-(load-theme 'nord t)
+(use-package neotree
+  :straight t
+  :config
+  (global-set-key (kbd "<f8>") 'neotree-toggle)
+  (setq neo-smart-open t
+        neo-autorefresh nil))
+
+(use-package gnuplot
+  :straight t
+  :config
+  (autoload 'gnuplot-mode "gnuplot" "Gnuplot major mode" t)
+  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot-mode" t)
+  (setq auto-mode-alist (append '(("\\.gp$" . gnuplot-mode)) auto-mode-alist)))
+
+(use-package selectrum
+  :straight t
+  :config (selectrum-mode +1))
+
+;;(use-package icomplete-vertical
+;;  :straight t
+;;  :config
+;;  ;; (icomplete-mode)
+;;  ;; (icomplete-vertical-mode)
+;;  )
+
+(use-package lua-mode
+  :straight t
+  :config
+  (setq lua-indent-level 2
+        lua-documentation-url "https://www.lua.org/manual/5.3/manual.html"))
+
+(use-package editorconfig
+  :straight t
+  :config
+  (editorconfig-mode 1)
+  (setq minor-mode-alist
+        (cl-remove-if (lambda (x)
+                        (equal (car x) 'editorconfig-mode))
+                      minor-mode-alist)))
+
+(use-package rainbow-mode
+  :straight t)
+
+(use-package tex
+  :straight auctex
+  :config
+  (setq TeX-view-program-list (append TeX-view-program-list '(("zathura" "zathura -P %(outpage) %o")))
+        TeX-view-program-selection (cl-mapcar #'(lambda (x) (if (eq (car x) 'output-pdf) '(output-pdf "zathura") x)) TeX-view-program-selection))
+  (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode))
 
 ;; Display
 (menu-bar-mode 0)           ;; hides menu bar
@@ -122,6 +458,11 @@
 (add-to-list 'default-frame-alist '(font . "Fira Code-10"))
 ;;(add-to-list 'default-frame-alist '(alpha . 75)) ;; transparency
 
+;; Mode Line
+(line-number-mode 1)
+(column-number-mode 1)
+(size-indication-mode 1)
+
 ;; Set backup locations
 (setq backup-directory-alist
       `((".*" . ,(locate-user-emacs-file "backups/"))))
@@ -130,7 +471,7 @@
 (customize-set-variable
  'tramp-backup-directory-alist backup-directory-alist)
 
-;; Highlight parenthesis
+;; Highlight parentheses
 (setq show-paren-delay 0)
 (show-paren-mode 1)
 ;;(setq blink-matching-delay 0)
@@ -142,11 +483,10 @@
     (defun display-line-numbers--turn-on ()
        "Turn on line numbers but excempting certain majore modes."
        (if (and
-            (not (member major-mode '(help-mode Info-mode ibuffer-mode occur-mode)))
+            (not (member major-mode '(help-mode Info-mode ibuffer-mode dired-mode occur-mode neotree-mode)))
             (not (minibufferp)))
            (display-line-numbers-mode)))
-    (global-display-line-numbers-mode)
-    (setq column-number-mode t)))
+    (global-display-line-numbers-mode)))
 
 ;; Disregard read-only-mode
 ;;(setq inhibit-read-only t)
@@ -174,7 +514,7 @@
 ;; Disable line wrap
 (setq-default truncate-lines t)
 (set-display-table-slot standard-display-table 'truncation 32)
-;;(fringe-mode 1)
+(fringe-mode 0)
 
 ;; Scroll one line at a time
 (setq scroll-step 1)
@@ -183,7 +523,7 @@
 (require 'ibuf-ext)
 (add-to-list 'ibuffer-never-show-predicates "^\\*")
 
-;; Prevent M-/ look in other buffers
+;; Prevent M-/ looking in other buffers
 (setq dabbrev-check-other-buffers nil)
 
 ;; Enable upper case and lower case conversion commands
@@ -205,6 +545,7 @@
 
 ;; Treat alacritty like screen
 ;;(add-to-list 'term-file-aliases '("alacritty" . "screen"))
+;;(add-to-list 'term-file-aliases '("alacritty" . "xterm"))
 
 ;; Set CC Mode indentation
 (add-hook 'c-mode-common-hook (lambda ()
@@ -212,9 +553,9 @@
 
 ;; Set sh-script mode indentation
 ;;(add-hook 'sh-mode-hook (lambda ()
-;;                  (setq sh-basic-offset 2)))
+;;                          (setq sh-basic-offset 2)))
 
-;; Fixes TRAMP hangs
+;; Fix TRAMP hanging
 (setq tramp-shell-prompt-pattern (concat "\\(?:^\\|\r\\)"
                                          "[^]#$%>\n]*#?[]#$%>].* *\\(\e\\[[0-9;]*[a-zA-Z] *\\)*"))
 
@@ -222,3 +563,80 @@
 (defun insert-number (n m)
   (dolist (x (number-sequence n m))
     (insert (concat (int-to-string x) "\n"))))
+
+;; Case-insensitive file name completion
+(setq read-file-name-completion-ignore-case t)
+
+;; Case-insensitive buffer completion
+(setq read-buffer-completion-ignore-case t)
+
+;; Use the primary selection for kill and yank commands.
+;; To access the clipboard:
+;;   clipboard-kill-region
+;;   clipboard-kill-ring-save
+;;   clipboard-yank
+;;(setq select-enable-clipboard nil
+;;      select-enable-primary t
+;;      mouse-drag-copy-region t)
+
+;; Minibuffer completion at point
+;;(define-key minibuffer-local-map (kbd "M-p") 'previous-complete-history-element)
+;;(define-key minibuffer-local-map (kbd "M-n") 'next-complete-history-element)
+;;(define-key minibuffer-local-map (kbd "<up>") 'previous-complete-history-element)
+;;(define-key minibuffer-local-map (kbd "<down>") 'next-complete-history-element)
+
+;; Save minibuffer history
+(savehist-mode 1)
+
+;; Copy the region into the clipboard using xclip
+(defun xclip-region ()
+  (interactive)
+  (unless (executable-find "xclip")
+    (error "xclip not found in exec-path"))
+  (shell-command-on-region (region-beginning)
+                           (region-end)
+                           "xclip -selection clipboard >/dev/null 2>&1"
+                           nil
+                           nil
+                           nil
+                           nil))
+
+;; Copy the string into the clipboard using xclip
+(defun xclip-string (input)
+  (interactive (list (read-shell-command "String input: ")))
+  (unless (executable-find "xclip")
+    (error "xclip not found in exec-path"))
+  (shell-command (concat "printf " (shell-quote-argument input) " | xclip -selection clipboard >/dev/null 2>&1")))
+
+;; Copy the kill ring into the clipboard using xclip
+(defun xclip-kill-ring ()
+  (interactive)
+  (unless (executable-find "xclip")
+    (error "xclip not found in exec-path"))
+  (shell-command (concat "printf " (shell-quote-argument (current-kill 0)) " | xclip -selection clipboard >/dev/null 2>&1")))
+
+;; Forward region to 0x0.st
+(defun 0x0 ()
+  (interactive)
+  (unless (executable-find "curl")
+    (error "curl not found in exec-path"))
+  (shell-command-on-region (region-beginning)
+                           (region-end)
+                           "curl -F file=@- https://0x0.st/"
+                           nil
+                           nil
+                           nil
+                           nil))
+
+;; Do not convert tag names to words in Customize, i.e. foo-bar-baz -> "Foo Bar Baz"
+(setq custom-unlispify-tag-names nil)
+
+;; Truncate long buffer name in mode line
+(setq-default mode-line-buffer-identification (append '(-20) (propertized-buffer-identification "%12b")))
+
+;; Set bash history size
+(setenv "HISTSIZE" "100000")
+(setenv "HISTFILESIZE" (getenv "HISTSIZE"))
+
+;; NFO viewer
+;; (revert-buffer-with-coding-system 'cp437)
