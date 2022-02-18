@@ -153,6 +153,8 @@ Example:
                  (cl-mapcar #'listify-wildcard
                             (straight-get-files-wildcard files "" flavor))))))
 
+(setq github-api-token nil)
+
 (defun straight--fetch-github-blobs-internal (repo local-repo sha &optional path wildcard)
   (let* ((first (or (car wildcard) "*"))
          (rest (or (cdr wildcard) '("*")))
