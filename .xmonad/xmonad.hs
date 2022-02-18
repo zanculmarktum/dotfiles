@@ -36,6 +36,8 @@ import System.Posix.Signals
 import System.Posix.Types
 import Control.Concurrent ( threadDelay )
 
+import Data.Char
+
 -- Remember the spawned PIDs.
 newtype SpawnedPIDs = SpawnedPIDs [ProcessID] deriving (Typeable, Read, Show)
 
@@ -163,7 +165,7 @@ fullscreenEventHook _ = return $ All True
 xmobar :: LayoutClass l Window
        => XConfig l -> IO (XConfig (ModifiedLayout AvoidStruts l))
 xmobar conf = statusBar "xmobar"
-              xmobarPP { ppTitle = xmobarColor "green"  "" . shorten 80
+              xmobarPP { ppTitle = xmobarColor "green"  "" . shorten 1000
                        }
               toggleStrutsKey
               conf
@@ -182,12 +184,23 @@ main = xmonad =<< (xmobar . ewmh) def
   , focusedBorderColor = "#e5e9f0"
   , terminal           = "termonad"
   , layoutHook         = lessBorders OnlyScreenFloat tiled ||| Mirror tiled ||| Full
-  , manageHook         = let doWindow f = map ((--> f) . (className =?))
+  , manageHook         = let doWindow = map . (. (className =?)) . (flip (-->))
                              float = doWindow doFloat
                              centerFloat = doWindow doCenterFloat
-                         in composeAll (float ["mpv"]
-                                        ++ centerFloat ["Sxiv","Zathura","Org.gnome.Nautilus"]
+                             match p s = (== s) . map toLower . take (length s) <$> p
+                         in composeAll (float ["mpv", "MEGAsync", "factorio", "Display", "gzdoom"
+                                              ,"explorer.exe", "regedit.exe", "control.exe"
+                                              ,"kmplot", "qt5ct", "milkytracker", "vlc"
+                                              ,"ollydbg.exe", "ZeGrapher"]
+                                        ++ centerFloat ["Sxiv","Zathura","Org.gnome.Nautilus"
+                                                       ,"Qemu-system-x86_64","Qemu-system-i386"
+                                                       ,"Lxappearance"]
                                         ++ [ stringProperty "_GTK_APPLICATION_ID" =? "io.otsaloma.gaupol" --> doFloat
+                                           , match className "minecraft" --> doFloat -- filter out "Minecraft n.m"
+                                           , match title "gloss" --> doFloat
+                                           , match title "opengl" --> doFloat
+                                           , match title "keyman" --> doCenterFloat
+                                           , match title "devtools" --> doFloat
                                            , isDialog --> doCenterFloat
                                            , isFullscreen --> doFullFloat
                                            , checkDock --> doLower
@@ -214,6 +227,7 @@ main = xmonad =<< (xmobar . ewmh) def
                                              , ((modMask conf              , xK_q), killPIDs
                                                                                     >> M.findWithDefault (return ()) (modMask conf, xK_q) (keys def conf))
                                              , ((modMask conf .|. shiftMask, xK_t), sinkAll)
+                                             , ((modMask conf, xK_u), spawn "xclip -o 2>/dev/null | xargs chromium")
                                              ]
                                   <+> keys def conf
   , borderWidth        = 2
