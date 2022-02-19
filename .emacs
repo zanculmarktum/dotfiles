@@ -642,3 +642,5 @@ Example:
 
 ;; NFO viewer
 ;; (revert-buffer-with-coding-system 'cp437)
+
+(setq js-indent-level 2)
