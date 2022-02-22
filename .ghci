@@ -1,0 +1,88 @@
+-- Set prompt
+:set prompt "λ> "
+:set prompt-cont "λ| "
+
+-- Enable multiline support
+:set +m
+
+-- Language Extension {-# LANGUAGE Extension #-}
+:seti -XBinaryLiterals
+
+-- Enable haddock
+:set -haddock
+
+-- lambdabot integration
+dotGHCI_escapeShellArg arg = "'" ++ concatMap (\c -> if c == '\'' then "'\\''" else [c]) arg ++ "'"
+lambdabot s1 s2 = return $ ":!lambdabot -n -e " ++ dotGHCI_escapeShellArg s1 ++ "\\ " ++ dotGHCI_escapeShellArg s2
+:def lambdabot lambdabot ""            -- runs arbitrary lambdabot commands
+:def pl lambdabot "pl"                 -- converts code to point-free (aka pointless) form
+:def unpl lambdabot "unpl"             -- converts back from point-free (aka pointless) form
+:def! do lambdabot "do"                 -- converts binds to do notation
+:def undo lambdabot "undo"             -- converts do blocks to bind notation
+:def index lambdabot "index"           -- finds the module that defines the given identifier
+:def! instances lambdabot "instances"   -- finds all instances of a given type class
+:def src lambdabot "src"               -- tries to find the source code for the given identifier
+:def oeis lambdabot "oeis"             -- looks up the On-Line Encyclopedia of Integer Sequences (https://oeis.org/)
+:def djinn lambdabot "djinn"           -- constructs a function satisfying given signature
+
+-- hoogle integration
+:def hoogle return . (":!hoogle search -q --color --count=20 " ++) . dotGHCI_escapeShellArg
+:def hlink return . (":!hoogle search -q --color --count=20 -l " ++) . dotGHCI_escapeShellArg
+:def hdoc return . (":!hoogle search -q --color --info " ++) . dotGHCI_escapeShellArg
+
+-- -- Colourise ghci output (use :nopretty to disable)
+-- -- Required libraries: pretty-show hscolour
+-- :set -package pretty-show -package hscolour
+-- import qualified Language.Haskell.HsColour as HSC
+-- import qualified Language.Haskell.HsColour.Colourise as HSC
+-- :{
+-- dotGHCI_myPrint :: (Show a) => a -> IO ()
+-- dotGHCI_myPrint a = putStrLn $ HSC.hscolour HSC.TTY myColourPrefs False False "" False $ Text.Show.Pretty.ppShow a
+--   where
+--     myColourPrefs = HSC.defaultColourPrefs -- { HSC.conop    = [HSC.Foreground HSC.Yellow]
+--                                            -- , HSC.conid    = [HSC.Foreground HSC.Yellow, HSC.Bold]
+--                                            -- , HSC.string   = [HSC.Foreground $ HSC.Rgb 29 193 57]
+--                                            -- , HSC.char     = [HSC.Foreground HSC.Cyan]
+--                                            -- , HSC.number   = [HSC.Foreground $ HSC.Rgb 202 170 236]
+--                                            -- , HSC.keyglyph = [HSC.Foreground HSC.Yellow]
+--                                            -- }
+-- :}
+-- :seti -interactive-print dotGHCI_myPrint
+-- :def! pretty \_ -> return ":set -interactive-print dotGHCI_myPrint"
+-- :def! nopretty \_ -> return ":set -interactive-print System.IO.print"
+-- :m -Language.Haskell.HsColour
+-- :m -Language.Haskell.HsColour.Colourise
+
+:{
+toBin n | n < 2 = show n
+        | (x,y) <- n `quotRem` 2 = toBin x <> toBin y
+
+toHex n | n <= 9 = show n
+        | n <= 15 = toEnum (n + 87) : []
+        | (x,y) <- n `quotRem` 16 = toHex x <> toHex y
+
+toOct n | n <= 7 = show n
+        | (x,y) <- n `quotRem` 8 = toOct x <> toOct y
+:}
+
+bin = showString "0b" . toBin
+hex = showString "0x" . toHex
+
+:def bin pure . show . toBin . read
+:def hex pure . show . toHex . read
+:def oct pure . show . toOct . read
+
+fromPercent n m = n * m / 100
+toPercent n m = n * 100 / m
+
+fromDegree n = fromPercent (toPercent n 90) (pi/2)
+toDegree n = fromPercent (toPercent n (pi/2)) 90
+
+:{
+decimalPlace n m | l < d = showString r (replicate (d - l) '0')
+                 | otherwise = r
+  where
+    d = n + 2
+    r = take d (show m)
+    l = length r
+:}

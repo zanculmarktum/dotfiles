@@ -161,3 +161,6 @@
 # termonad
 !.config/termonad
 !.config/termonad/termonad.hs
+
+# GHC
+!.ghci
