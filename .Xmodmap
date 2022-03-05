@@ -7,3 +7,12 @@ keysym Caps_Lock = Tab
 
 ! Tab
 keysym Tab = Escape
+
+! XF86Back and XF86Forward
+keysym XF86Back =
+keysym XF86Forward =
+
+! Japanese keyboard
+keysym Muhenkan = space
+keysym Henkan_Mode = space
+keysym Hiragana_Katakana = space
