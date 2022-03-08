@@ -450,6 +450,17 @@ Example:
         TeX-view-program-selection (cl-mapcar #'(lambda (x) (if (eq (car x) 'output-pdf) '(output-pdf "zathura") x)) TeX-view-program-selection))
   (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode))
 
+(use-package rust-mode
+  :straight t)
+
+(use-package js2-mode
+  :straight t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+  (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
+  ;;(add-hook 'js-mode-hook 'js2-minor-mode)
+  )
+
 ;; Display
 (menu-bar-mode 0)           ;; hides menu bar
 (tool-bar-mode 0)           ;; hides tool bar
@@ -550,8 +561,8 @@ Example:
 ;;(add-to-list 'term-file-aliases '("alacritty" . "xterm"))
 
 ;; Set CC Mode indentation
-(add-hook 'c-mode-common-hook (lambda ()
-                                (setq c-basic-offset 4)))
+;;(add-hook 'c-mode-common-hook (lambda ()
+;;                                (setq c-basic-offset 4)))
 
 ;; Set sh-script mode indentation
 ;;(add-hook 'sh-mode-hook (lambda ()
