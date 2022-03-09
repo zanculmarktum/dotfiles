@@ -88,7 +88,7 @@ function cd {
 
     if [[ "$dir" =~ ^\+([0-9]+)$ ]]; then
         n="${BASH_REMATCH[1]}"
-        if [[ "$n" == "0" ]] || (( "${#DIRSTACK[@]}" <= "1" )); then
+        if [[ "$n" == "0" ]] || (( "${#DIRSTACK[@]}" <= "1" )) || (( "$n" >= "${#DIRSTACK[@]}" )); then
             return 0
         fi
         dir="${DIRSTACK[$n]}"
