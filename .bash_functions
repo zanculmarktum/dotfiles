@@ -88,18 +88,32 @@ function cd {
 
     if [[ "$dir" =~ ^\+([0-9]+)$ ]]; then
         n="${BASH_REMATCH[1]}"
+        if [[ "$n" == "0" ]] || (( "${#DIRSTACK[@]}" <= "1" )); then
+            return 0
+        fi
         dir="${DIRSTACK[$n]}"
         popd -n "+$n" >/dev/null
     elif [[ "$dir" =~ ^-$ ]]; then
+        if (( "${#DIRSTACK[@]}" <= "1" )); then
+            return 0
+        fi
         dir="${DIRSTACK[1]}"
         popd -n +1 >/dev/null
     else
+        is_home=0
+
         if [[ ! "$dir" ]]; then
             dir="$HOME"
+            is_home=1
         fi
 
         if [[ "$dir" =~ ^~(.*) ]]; then
             dir="$HOME${BASH_REMATCH[1]}"
+            is_home=1
+        fi
+
+        if (( $is_home )) && (( "${#DIRSTACK[@]}" <= "1" )); then
+            return 0
         fi
 
         while :; do
