@@ -654,4 +654,13 @@ Example:
 ;; NFO viewer
 ;; (revert-buffer-with-coding-system 'cp437)
 
+;; Set JavaScript mode indentation
 (setq js-indent-level 2)
+
+;; Use fundamental-mode if the line is too overly long
+(add-hook 'find-file-hook
+          #'(lambda ()
+              (unless (string-match-p "\n" (buffer-substring-no-properties (point-min) 1000))
+                (fundamental-mode)
+                (setq truncate-lines nil)
+                (highlight-indent-guides-mode 0))))
