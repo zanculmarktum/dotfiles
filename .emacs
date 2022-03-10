@@ -660,9 +660,10 @@ Example:
 ;; Use fundamental-mode if the line is too overly long
 (add-hook 'find-file-hook
           #'(lambda ()
-              (unless (string-match-p "\n" (buffer-substring-no-properties
-                                            (point-min)
-                                            (if (> (point-max) 1000) 1000 (point-max))))
+              (unless (or (= (point-max) 1)
+                          (string-match-p "\n" (buffer-substring-no-properties
+                                                (point-min)
+                                                (if (> (point-max) 1000) 1000 (point-max)))))
                 (fundamental-mode)
                 (setq truncate-lines nil)
                 (highlight-indent-guides-mode 0))))
