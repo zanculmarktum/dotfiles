@@ -453,14 +453,6 @@ Example:
 (use-package rust-mode
   :straight t)
 
-(use-package js2-mode
-  :straight t
-  :config
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-  (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
-  ;;(add-hook 'js-mode-hook 'js2-minor-mode)
-  )
-
 ;; Display
 (menu-bar-mode 0)           ;; hides menu bar
 (tool-bar-mode 0)           ;; hides tool bar
@@ -536,7 +528,7 @@ Example:
 (require 'ibuf-ext)
 (add-to-list 'ibuffer-never-show-predicates "^\\*")
 
-;; Prevent M-/ looking in other buffers
+;; Prevent ‘M-/’ looking in other buffers
 (setq dabbrev-check-other-buffers nil)
 
 ;; Enable upper case and lower case conversion commands
@@ -549,7 +541,7 @@ Example:
 ;; Preserve point position when scrolling
 (setq scroll-preserve-screen-position t)
 
-;; Rebind M-DEL to its original function in diff-mode
+;; Rebind ‘M-DEL’ to its original function in diff-mode
 (add-hook 'diff-mode-hook (lambda ()
                             (local-unset-key (kbd "M-DEL"))))
 
@@ -667,3 +659,6 @@ Example:
                 (fundamental-mode)
                 (setq truncate-lines nil)
                 (highlight-indent-guides-mode 0))))
+
+;; Use base-10 for ‘C-q’ (‘quoted-insert’)
+(setq read-quoted-char-radix 10)
