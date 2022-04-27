@@ -82,7 +82,7 @@ ${ps_color}└─[\\\$]${normal} "
 
 # Push cd'ed directories into stack
 function cd {
-    local dir _dirstack d i n found
+    local dir _dirstack d i n found is_home
 
     dir="$1"
 
@@ -112,44 +112,47 @@ function cd {
             is_home=1
         fi
 
+        if [[ -d "$dir" ]]; then
+            :
+        elif [[ -f "$dir" ]]; then
+            echo >&2 "bash: cd: $dir: Not a directory"
+            return 1
+        else
+            echo >&2 "bash: cd: $dir: No such file or directory"
+            return 1
+        fi
+
+        if [[ "$(builtin cd "$dir" && pwd)" =~ ^$HOME(.*) ]]; then
+            dir="$HOME${BASH_REMATCH[1]}"
+            is_home=1
+        fi
+
         if (( $is_home )) && (( "${#DIRSTACK[@]}" <= "1" )); then
             return 0
         fi
 
-        while :; do
-            if [[ "$dir" =~ (.*)/$ ]]; then
-                dir="${BASH_REMATCH[1]}"
-            else
-                break
-            fi
+        while [[ "$dir" =~ (.*)/$ ]]; do
+            dir="${BASH_REMATCH[1]}"
         done
 
-        dir=$(readlink -f "$dir")
+        dir=$(builtin cd "$dir" && pwd)
+
+        if [[ "$dir" == "${DIRSTACK[0]}" ]]; then
+            return 0
+        fi
 
         _dirstack=("${DIRSTACK[@]}")
-        i=0
+        i=1
         while (( "$i" < "${#_dirstack[@]}" )); do
-            d="${_dirstack[$i]}"
-
-            if [[ "$d" =~ ^~(.*) ]]; then
-                d="$HOME${BASH_REMATCH[1]}"
-            fi
-
-            while :; do
-                if [[ "$d" =~ (.*)/$ ]]; then
-                    d="${BASH_REMATCH[1]}"
-                else
-                    break
-                fi
-            done
-
-            d=$(readlink -f "$d")
-
-            if [[ "$d" == "$dir" ]]; then
-                popd -n "+$i" >/dev/null
-            fi
-
+            popd -n >/dev/null
             i=$(( $i + 1 ))
+        done
+        i=$(( "${#_dirstack[@]}" - 1 ))
+        while (( "$i" > 0 )); do
+            if [[ "${_dirstack[$i]}" != "$dir" ]]; then
+                pushd -n "${_dirstack[$i]}" >/dev/null
+            fi
+            i=$(( $i - 1 ))
         done
     fi
 
@@ -157,8 +160,10 @@ function cd {
         popd -n +9 >/dev/null
     fi
 
+    pushd "$dir" >/dev/null 2>&1
+
     if [[ -d "$dir" ]]; then
-        pushd "$dir" >/dev/null
+        :
     elif [[ -f "$dir" ]]; then
         echo >&2 "bash: cd: $dir: Not a directory"
         return 1
@@ -206,7 +211,7 @@ function urlencode {
     # urlencode <string>
     old_lc_collate=$LC_COLLATE
     LC_COLLATE=C
-    
+
     local length="${#1}"
     for (( i = 0; i < length; i++ )); do
         local c="${1:i:1}"
@@ -216,7 +221,7 @@ function urlencode {
         esac
     done
     printf '\n'
-    
+
     LC_COLLATE=$old_lc_collate
 }
 
