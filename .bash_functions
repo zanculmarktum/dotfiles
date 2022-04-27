@@ -107,15 +107,6 @@ function cd {
             is_home=1
         fi
 
-        if [[ "$dir" =~ ^~$ ]]; then
-            dir="$HOME"
-            is_home=1
-        fi
-
-        if [[ "$dir" =~ ^~(.*) ]]; then
-            dir="$HOME${BASH_REMATCH[1]}"
-        fi
-
         if [[ -d "$dir" ]]; then
             :
         elif [[ -f "$dir" ]]; then
@@ -124,10 +115,6 @@ function cd {
         else
             echo >&2 "bash: cd: $dir: No such file or directory"
             return 1
-        fi
-
-        if [[ "$(builtin cd "$dir" && pwd)" =~ ^$HOME(.*) ]]; then
-            dir="$HOME${BASH_REMATCH[1]}"
         fi
 
         if (( $is_home )) && (( "${#DIRSTACK[@]}" <= "1" )); then
