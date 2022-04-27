@@ -107,9 +107,13 @@ function cd {
             is_home=1
         fi
 
+        if [[ "$dir" =~ ^~$ ]]; then
+            dir="$HOME"
+            is_home=1
+        fi
+
         if [[ "$dir" =~ ^~(.*) ]]; then
             dir="$HOME${BASH_REMATCH[1]}"
-            is_home=1
         fi
 
         if [[ -d "$dir" ]]; then
@@ -124,7 +128,6 @@ function cd {
 
         if [[ "$(builtin cd "$dir" && pwd)" =~ ^$HOME(.*) ]]; then
             dir="$HOME${BASH_REMATCH[1]}"
-            is_home=1
         fi
 
         if (( $is_home )) && (( "${#DIRSTACK[@]}" <= "1" )); then
