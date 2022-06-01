@@ -1,9 +1,12 @@
+-- Written for xmonad-0.17.0 and xmonad-contrib-0.17.0
+
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE TypeApplications #-}
 
 import XMonad
 
-import XMonad.Hooks.DynamicLog hiding ( xmobar )
+import XMonad.Hooks.DynamicLog hiding (xmobar)
 import XMonad.Util.Run
 import XMonad.Hooks.ManageDocks
 import XMonad.Layout.LayoutModifier
@@ -11,11 +14,15 @@ import XMonad.Layout.LayoutModifier
 import XMonad.Prompt
 import XMonad.Prompt.XMonad
 
-import XMonad.Hooks.EwmhDesktops hiding ( ewmh, ewmhDesktopsStartup, fullscreenEventHook )
+import qualified XMonad.Hooks.EwmhDesktops
+import XMonad.Hooks.EwmhDesktops hiding (ewmh,
+                                         ewmhFullscreen,
+                                         ewmhDesktopsStartup,
+                                         fullscreenEventHook)
 import XMonad.Hooks.SetWMName
 import qualified XMonad.StackSet as W
-import XMonad.Util.XUtils ( fi )
-import XMonad.Util.WindowProperties ( getProp32 )
+import XMonad.Util.XUtils (fi)
+import XMonad.Util.WindowProperties (getProp32)
 import Control.Monad
 import Data.List
 import Data.Maybe
@@ -25,8 +32,6 @@ import XMonad.Layout.NoBorders
 
 import XMonad.Hooks.ManageHelpers
 
-import XMonad.Util.SpawnOnce
-
 import qualified Data.Map as M
 
 import XMonad.Actions.WithAll
@@ -34,40 +39,39 @@ import XMonad.Actions.WithAll
 import qualified XMonad.Util.ExtensibleState as XS
 import System.Posix.Signals
 import System.Posix.Types
-import Control.Concurrent ( threadDelay )
+import Control.Concurrent (threadDelay)
 
 import Data.Char
 
--- Remember the spawned PIDs.
-newtype SpawnedPIDs = SpawnedPIDs [ProcessID] deriving (Typeable, Read, Show)
+import Control.Exception (SomeException, try)
 
-instance ExtensionClass SpawnedPIDs where
-  initialValue = SpawnedPIDs []
-  extensionType = PersistentExtension
+-- Remember the spawned PIDs
+newtype SpawnOnce = SpawnOnce { unspawnOnce :: M.Map String ProcessID }
+    deriving (Typeable, Read, Show)
 
-fromSpawnedPIDs :: SpawnedPIDs -> [ProcessID]
-fromSpawnedPIDs (SpawnedPIDs pids) = pids
+instance ExtensionClass SpawnOnce where
+    initialValue = SpawnOnce M.empty
+    extensionType = PersistentExtension
 
-modifySpawnedPIDs :: (SpawnedPIDs -> SpawnedPIDs) -> X ()
-modifySpawnedPIDs = XS.modify
+-- | The first time 'spawnOnce' is executed on a particular command,
+-- that command is executed.  Subsequent invocations for a command do
+-- nothing.
+spawnOnce :: String -> X ()
+spawnOnce s = do
+  b <- XS.gets (M.member s . unspawnOnce)
+  unless b $ do
+    pid <- spawnPID s
+    XS.modify (SpawnOnce . M.insert s pid . unspawnOnce)
 
-spawnedPIDsInsert :: SpawnedPIDs -> ProcessID -> SpawnedPIDs
-spawnedPIDsInsert (SpawnedPIDs pids) pid = SpawnedPIDs $ pid : pids
-
-spawnState :: String -> X ()
-spawnState cmd = do
-  pid <- spawnPID cmd
-  modifySpawnedPIDs $ \pids -> spawnedPIDsInsert pids pid
+killOnce :: X ()
+killOnce = do
+  void $ M.traverseWithKey (const killPID) =<< XS.gets unspawnOnce
+  --XS.modify (SpawnOnce . const M.empty)
 
 killPID :: ProcessID -> X ()
 killPID pid = io $ do
-  signalProcess sigTERM pid
-  -- threadDelay 50000
-
-killPIDs :: X ()
-killPIDs = do
-  mapM_ killPID . fromSpawnedPIDs =<< XS.get
-  modifySpawnedPIDs $ const $ SpawnedPIDs []
+  void $ try @SomeException (signalProcessGroup sigTERM pid)
+  --threadDelay 50000
 
 -- Remember floating windows positions
 newtype FloatingRectangle = FloatingRectangle (M.Map Window W.RationalRect)
@@ -80,20 +84,15 @@ instance ExtensionClass FloatingRectangle where
 fromFloatRect :: FloatingRectangle -> M.Map Window W.RationalRect
 fromFloatRect (FloatingRectangle m) = m
 
-getFloatRect :: X FloatingRectangle
-getFloatRect = XS.get
-
-modifyFloatRect :: (FloatingRectangle -> FloatingRectangle) -> X ()
-modifyFloatRect = XS.modify
-
-floatRectInsert :: FloatingRectangle -> Window -> W.RationalRect -> FloatingRectangle
-floatRectInsert (FloatingRectangle m) w r = FloatingRectangle $ M.insert w r m
-
 ewmh :: XConfig a -> XConfig a
-ewmh c = c { startupHook     = startupHook c +++ ewmhDesktopsStartup
-           , handleEventHook = handleEventHook c +++ ewmhDesktopsEventHook
-           , logHook         = logHook c +++ ewmhDesktopsLogHook }
- where x +++ y = mappend y x
+ewmh c = (XMonad.Hooks.EwmhDesktops.ewmh c)
+  { startupHook = ewmhDesktopsStartup <+> startupHook c
+  }
+
+ewmhFullscreen :: XConfig a -> XConfig a
+ewmhFullscreen c = (XMonad.Hooks.EwmhDesktops.ewmhFullscreen c)
+  { handleEventHook = handleEventHook c <+> fullscreenEventHook
+  }
 
 ewmhDesktopsStartup :: X ()
 ewmhDesktopsStartup = setSupported
@@ -105,8 +104,8 @@ setSupported :: X ()
 setSupported = withDisplay $ \dpy -> do
     r <- asks theRoot
     a <- getAtom "_NET_SUPPORTED"
-    c <- getAtom "ATOM"
     supp <- mapM getAtom ["_NET_WM_STATE_HIDDEN"
+                         ,"_NET_WM_STATE_DEMANDS_ATTENTION"
                          ,"_NET_NUMBER_OF_DESKTOPS"
                          ,"_NET_CLIENT_LIST"
                          ,"_NET_CLIENT_LIST_STACKING"
@@ -117,15 +116,16 @@ setSupported = withDisplay $ \dpy -> do
                          ,"_NET_WM_STRUT"
                          ,"_NET_WM_STATE_FULLSCREEN"
                          ]
-    io $ changeProperty32 dpy r a c propModeReplace (fmap fromIntegral supp)
+    io $ changeProperty32 dpy r a aTOM propModeReplace (fmap fromIntegral supp)
 
     setWMName "xmonad"
 
 fullscreenEventHook :: Event -> X All
 fullscreenEventHook (ClientMessageEvent _ _ _ dpy win typ (action:dats)) = do
+  managed <- isClient win
   wmstate <- getAtom "_NET_WM_STATE"
   fullsc <- getAtom "_NET_WM_STATE_FULLSCREEN"
-  wstate <- fromMaybe [] `fmap` getProp32 wmstate win
+  wstate <- fromMaybe [] <$> getProp32 wmstate win
 
   let isFull = fromIntegral fullsc `elem` wstate
 
@@ -133,8 +133,7 @@ fullscreenEventHook (ClientMessageEvent _ _ _ dpy win typ (action:dats)) = do
       remove = 0
       add = 1
       toggle = 2
-      ptype = 4 -- The atom property type for changeProperty
-      chWstate f = io $ changeProperty32 dpy win wmstate ptype propModeReplace (f wstate)
+      chWstate f = io $ changeProperty32 dpy win wmstate aTOM propModeReplace (f wstate)
 
       fullRect = W.RationalRect 0 0 1 1
       noRect = W.RationalRect (-100) (-100) (-100) (-100)
@@ -143,11 +142,11 @@ fullscreenEventHook (ClientMessageEvent _ _ _ dpy win typ (action:dats)) = do
     rect <- withWindowSet $ pure . M.findWithDefault noRect win . W.floating
 
     when (rect /= fullRect && rect /= noRect) $
-      modifyFloatRect $ \x -> floatRectInsert x win rect
+      XS.modify (FloatingRectangle . M.insert win rect . fromFloatRect)
 
-  rect <- M.findWithDefault noRect win . fromFloatRect <$> getFloatRect
+  rect <- M.findWithDefault noRect win . fromFloatRect <$> XS.get
 
-  when (typ == wmstate && fi fullsc `elem` dats) $ do
+  when (managed && typ == wmstate && fi fullsc `elem` dats) $ do
     when (action == add || (action == toggle && not isFull)) $ do
       chWstate (fi fullsc:)
       windows $ W.float win fullRect
@@ -164,22 +163,16 @@ fullscreenEventHook _ = return $ All True
 
 xmobar :: LayoutClass l Window
        => XConfig l -> IO (XConfig (ModifiedLayout AvoidStruts l))
-xmobar conf = statusBar "xmobar"
-              xmobarPP { ppTitle = xmobarColor "green"  "" . shorten 1000
-                       }
-              toggleStrutsKey
-              conf
+xmobar = statusBar "xmobar"
+         xmobarPP { ppTitle = xmobarColor "green"  "" . shorten 1000
+                  }
+         toggleStrutsKey
 
 toggleStrutsKey :: XConfig t -> (KeyMask, KeySym)
 toggleStrutsKey XConfig{modMask = modm} = (modm, xK_b )
 
--- | Lower an unmanaged window. Useful together with 'doIgnore' to lower
--- special windows that for some reason don't do it themselves.
-doLower :: ManageHook
-doLower = ask >>= \w -> liftX $ withDisplay $ \dpy -> io (lowerWindow dpy w) >> mempty
-
 main :: IO ()
-main = xmonad =<< (xmobar . ewmh) def
+main = (xmonad =<<) . xmobar . ewmhFullscreen . ewmh $ def
   { normalBorderColor  = "#a6a6a6"
   , focusedBorderColor = "#e5e9f0"
   , terminal           = "termonad"
@@ -207,46 +200,38 @@ main = xmonad =<< (xmobar . ewmh) def
                                            ])
                          -- <+> doCenterFloat
                          <+> manageHook def
-  , handleEventHook    = fullscreenEventHook <+> handleEventHook def
+  --, handleEventHook    = fullscreenEventHook <+> handleEventHook def
   --, workspaces         = map ((" "++) . (++" "). show) [1 .. 9 :: Int]
   , modMask            = mod4Mask
   , keys               = \conf -> M.fromList [ ((modMask conf              , xK_p), spawn $ "j4-dmenu-desktop --no-generic --term=" ++ terminal conf)
                                              , ((modMask conf .|. shiftMask, xK_p), spawn "dmenu_run")
                                              , ((modMask conf              , xK_f), withFocused float)
                                              , ((modMask conf .|. shiftMask, xK_x), xmonadPrompt def { font = "xft:Terminus:size=8" })
-                                             --, ((modMask conf              , xK_q), spawn $ unwords [ "if type xmonad; then"
-                                             --                                                       ,   "if xmonad --recompile; then"
-                                             --                                                       ,     "ps=$(ps -e -o pid,comm);"
-                                             --                                                       ,     "pids=$(echo \"$ps\" | awk '$2 == \"trayer\" { print $1 }');"
-                                             --                                                       ,     "kill -9 $pids;"
-                                             --                                                       ,     "xmonad --restart;"
-                                             --                                                       ,   "fi;"
-                                             --                                                       , "else xmessage xmonad not in \\$PATH: \"$PATH\";"
-                                             --                                                       , "fi"
-                                             --                                                       ])
-                                             , ((modMask conf              , xK_q), killPIDs
-                                                                                    >> M.findWithDefault (return ()) (modMask conf, xK_q) (keys def conf))
+                                             , ((modMask conf .|. shiftMask, xK_q), killOnce
+                                                                                    >> M.findWithDefault (return ()) (modMask conf .|. shiftMask, xK_q) (keys def conf))
+                                             --, ((modMask conf              , xK_q), killOnce
+                                             --                                       >> M.findWithDefault (return ()) (modMask conf, xK_q) (keys def conf))
                                              , ((modMask conf .|. shiftMask, xK_t), sinkAll)
                                              , ((modMask conf, xK_u), spawn "xclip -o 2>/dev/null | xargs chromium")
                                              ]
                                   <+> keys def conf
   , borderWidth        = 2
   --, logHook            = catchIO (putStrLn "foo") <+> logHook def
-  , startupHook        = spawnState (unwords [ "trayer", "-l"
-                                             , "--edge", "top"
-                                             , "--align", "right"
-                                             , "--widthtype", "request"
-                                             , "--height", "16"
-                                             , "--SetDockType", "true"
-                                             , "--SetPartialStrut", "true"
-                                             , "--transparent", "true"
-                                             , "--alpha", "0"
-                                             , "--tint", "0x2e3440"
-                                             , "--expand", "true"
-                                             ])
+  , startupHook        = spawnOnce (unwords [ "trayer", "-l"
+                                            , "--edge", "top"
+                                            , "--align", "right"
+                                            , "--widthtype", "request"
+                                            , "--height", "16"
+                                            , "--SetDockType", "true"
+                                            , "--SetPartialStrut", "true"
+                                            , "--transparent", "true"
+                                            , "--alpha", "0"
+                                            , "--tint", "0x2e3440"
+                                            , "--expand", "true"
+                                            ])
                          <+> spawnOnce "hsetroot -fill .xmonad/wall.png"
                          <+> spawnOnce "redshift-gtk"
-                         <+> spawnState "parcellite"
+                         <+> spawnOnce "parcellite"
                          <+> startupHook def
   }
   where
