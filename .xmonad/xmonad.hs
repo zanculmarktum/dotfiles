@@ -15,8 +15,7 @@ import XMonad.Prompt
 import XMonad.Prompt.XMonad
 
 import qualified XMonad.Hooks.EwmhDesktops
-import XMonad.Hooks.EwmhDesktops hiding (ewmh,
-                                         ewmhFullscreen,
+import XMonad.Hooks.EwmhDesktops hiding (ewmhFullscreen,
                                          ewmhDesktopsStartup,
                                          fullscreenEventHook)
 import XMonad.Hooks.SetWMName
@@ -84,41 +83,10 @@ instance ExtensionClass FloatingRectangle where
 fromFloatRect :: FloatingRectangle -> M.Map Window W.RationalRect
 fromFloatRect (FloatingRectangle m) = m
 
-ewmh :: XConfig a -> XConfig a
-ewmh c = (XMonad.Hooks.EwmhDesktops.ewmh c)
-  { startupHook = ewmhDesktopsStartup <+> startupHook c
-  }
-
 ewmhFullscreen :: XConfig a -> XConfig a
 ewmhFullscreen c = (XMonad.Hooks.EwmhDesktops.ewmhFullscreen c)
   { handleEventHook = handleEventHook c <+> fullscreenEventHook
   }
-
-ewmhDesktopsStartup :: X ()
-ewmhDesktopsStartup = setSupported
-
--- Add _NET_WM_STATE_FULLSCREEN to _NET_SUPPORTED to allow
--- programs that don't support _NET_WM_STATE protocol
--- go fullscreen.
-setSupported :: X ()
-setSupported = withDisplay $ \dpy -> do
-    r <- asks theRoot
-    a <- getAtom "_NET_SUPPORTED"
-    supp <- mapM getAtom ["_NET_WM_STATE_HIDDEN"
-                         ,"_NET_WM_STATE_DEMANDS_ATTENTION"
-                         ,"_NET_NUMBER_OF_DESKTOPS"
-                         ,"_NET_CLIENT_LIST"
-                         ,"_NET_CLIENT_LIST_STACKING"
-                         ,"_NET_CURRENT_DESKTOP"
-                         ,"_NET_DESKTOP_NAMES"
-                         ,"_NET_ACTIVE_WINDOW"
-                         ,"_NET_WM_DESKTOP"
-                         ,"_NET_WM_STRUT"
-                         ,"_NET_WM_STATE_FULLSCREEN"
-                         ]
-    io $ changeProperty32 dpy r a aTOM propModeReplace (fmap fromIntegral supp)
-
-    setWMName "xmonad"
 
 fullscreenEventHook :: Event -> X All
 fullscreenEventHook (ClientMessageEvent _ _ _ dpy win typ (action:dats)) = do
