@@ -287,6 +287,16 @@ Example:
       (error "The wildcard must be relative"))
     (funcall listify wildcard '())))
 
+(defun append-path (new-path &optional add-exec-path)
+  "Append to PATH if NEW-PATH doesn't exist in PATH.
+
+Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
+  (unless (or (string= new-path "")
+              (seq-contains-p (split-string (getenv "PATH") ":") new-path #'string=))
+    (setenv "PATH" (concat new-path ":" (getenv "PATH")))
+    (when add-exec-path
+      (add-to-list 'exec-path new-path))))
+
 (straight-use-package 'use-package)
 
 (use-package nord-theme
@@ -323,7 +333,7 @@ Example:
   (add-hook 'find-file-hook
             #'(lambda ()
                 (let ((size (file-attribute-size (file-attributes (buffer-name))))
-                      (large-file-warning-threshold 1000000))
+                      (large-file-warning-threshold 500000))
                   (unless (and large-file-warning-threshold size
                                (> size large-file-warning-threshold))
                     (highlight-indent-guides-mode 1)))))
@@ -404,8 +414,9 @@ Example:
   :straight t
   :config
   (global-set-key (kbd "<f8>") 'neotree-toggle)
-  (setq neo-smart-open t
-        neo-autorefresh nil))
+  (setq ;;neo-smart-open t
+        neo-autorefresh nil
+        neo-show-hidden-files t))
 
 (use-package gnuplot
   :straight t
@@ -452,6 +463,22 @@ Example:
 
 (use-package rust-mode
   :straight t)
+
+(use-package php-mode
+  :straight t)
+
+(use-package typescript-mode
+  :straight t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
+  (setq typescript-indent-level 2))
+
+(use-package vue-mode
+  :straight t)
+
+(use-package all-the-icons
+  :straight t
+  :if (display-graphic-p))
 
 ;; Display
 (menu-bar-mode 0)           ;; hides menu bar
@@ -662,3 +689,18 @@ Example:
 
 ;; Use base-10 for ‘C-q’ (‘quoted-insert’)
 (setq read-quoted-char-radix 10)
+
+;; Set the browser
+(setenv "BROWSER" "chromium")
+
+;; Set the editor
+(setenv "EDITOR" "emacsclient -nw")
+
+;; Set CSS mode indent offset
+(setq css-indent-offset 2)
+
+;; Set PATH
+(append-path (expand-file-name "~/.config/composer/vendor/bin") t)
+(append-path (expand-file-name "~/.node_modules/bin") t)
+(append-path (expand-file-name "~/.cabal/bin") t)
+(append-path (expand-file-name "~/.local/bin") t)
