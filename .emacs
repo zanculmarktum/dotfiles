@@ -336,7 +336,8 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
                       (large-file-warning-threshold 500000))
                   (unless (and large-file-warning-threshold size
                                (> size large-file-warning-threshold))
-                    (highlight-indent-guides-mode 1)))))
+                    ;;(highlight-indent-guides-mode 1)
+                    ))))
 
   (setq highlight-indent-guides-method 'character)
   (setq highlight-indent-guides-auto-enabled nil)
@@ -416,7 +417,10 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   (global-set-key (kbd "<f8>") 'neotree-toggle)
   (setq ;;neo-smart-open t
         neo-autorefresh nil
-        neo-show-hidden-files t))
+        neo-show-hidden-files t
+        neo-window-fixed-size nil)
+  (when (display-graphic-p)
+    (setq neo-theme 'icons)))
 
 (use-package gnuplot
   :straight t
@@ -480,6 +484,44 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   :straight t
   :if (display-graphic-p))
 
+(use-package move-text
+  :straight t
+  :config
+  ;;(move-text-default-bindings)
+  (global-set-key (kbd "M-n") 'move-text-down)
+  (global-set-key (kbd "M-p") 'move-text-up))
+
+(use-package doom-modeline
+  :straight t
+  :init
+  (doom-modeline-mode 1)
+  :config
+  (setq doom-modeline-buffer-file-name-style 'buffer-name))
+
+(use-package doom-themes
+  :straight t
+  ;;:config
+  ;;(load-theme 'doom-nord t)
+  ;;(doom-themes-neotree-config)
+  )
+
+(use-package centaur-tabs
+  :straight t
+  ;;:config
+  ;;(centaur-tabs-mode t)
+  ;;(centaur-tabs-change-fonts "Fira Code" 100)
+  ;;(centaur-tabs-headline-match)
+  ;;(setq centaur-tabs-style "bar"
+  ;;      centaur-tabs-enable-ido-completion nil
+  ;;      centaur-tabs-set-icons t
+  ;;      centaur-tabs-set-modified-marker t)
+  ;;(global-set-key (kbd "C-<prior>")  'centaur-tabs-backward)
+  ;;(global-set-key (kbd "C-<next>") 'centaur-tabs-forward)
+  )
+
+;;(use-package geiser-guile
+;;  :straight t)
+
 ;; Display
 (menu-bar-mode 0)           ;; hides menu bar
 (tool-bar-mode 0)           ;; hides tool bar
@@ -488,6 +530,9 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 ;; Frames
 (add-to-list 'default-frame-alist '(font . "Fira Code-10"))
+;;(setq default-frame-alist (cl-remove-if
+;;                           #'(lambda (x) (eq (car x) 'font))
+;;                           default-frame-alist))
 ;;(add-to-list 'default-frame-alist '(alpha . 75)) ;; transparency
 
 ;; Mode Line
@@ -704,3 +749,19 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (append-path (expand-file-name "~/.node_modules/bin") t)
 (append-path (expand-file-name "~/.cabal/bin") t)
 (append-path (expand-file-name "~/.local/bin") t)
+
+;; Kill an entire line without having to C-a first
+(global-set-key (kbd "C-M-k") #'(lambda ()
+                                  (interactive)
+                                  (move-beginning-of-line 1)
+                                  (kill-line)))
+
+(setq tab-stop-list ((lambda (n)
+                       (let ((i n)
+                             (result nil))
+                         (while (<= i 10)
+                           (setq result (append result (list i)))
+                           (setq i (+ n i)))
+                         result)) 2))
+
+(setq sql-mariadb-options '("--default-character-set=utf8mb4"))
