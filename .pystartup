@@ -21,3 +21,12 @@ if os.path.exists(historyPath):
 
 atexit.register(save_history)
 del os, atexit, readline, rlcompleter, save_history, historyPath
+
+from importlib import reload
+
+def star(addr):
+    return __import__('ctypes').cast(addr, __import__('ctypes').py_object).value
+
+# Local Variables:
+# mode: python
+# End:
