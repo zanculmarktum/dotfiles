@@ -117,9 +117,9 @@ function cd {
             return 1
         fi
 
-        if (( $is_home )) && (( "${#DIRSTACK[@]}" <= "1" )); then
-            return 0
-        fi
+        #if (( $is_home )) && (( "${#DIRSTACK[@]}" <= "1" )); then
+        #    return 0
+        #fi
 
         while [[ "$dir" =~ (.*)/$ ]]; do
             dir="${BASH_REMATCH[1]}"
