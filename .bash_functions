@@ -249,6 +249,12 @@ function e {
     fi;
 }
 
+function title {
+    if [[ "$(xprop WM_NAME)" =~ [^\"]*\"([^\"]*)\" ]]; then
+        echo "${BASH_REMATCH[1]}"
+    fi
+}
+
 # vim:ft=sh
 # Local Variables:
 # mode: Shell-script
