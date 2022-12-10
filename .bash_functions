@@ -245,7 +245,7 @@ function e {
         cat >"$TMP";
         emacsclient -nw --eval "(let ((b (create-file-buffer \"*stdin*\"))) (switch-to-buffer b) (insert-file-contents \"${TMP}\") (delete-file \"${TMP}\"))"
     else
-        emacsclient -nw "$@"
+        emacsclient -nw --alternate-editor='emacs -nw' "$@"
     fi;
 }
 
