@@ -418,7 +418,8 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   (setq ;;neo-smart-open t
         neo-autorefresh nil
         neo-show-hidden-files t
-        neo-window-fixed-size nil)
+        neo-window-fixed-size nil
+        neo-auto-indent-point t)
   (when (display-graphic-p)
     (setq neo-theme 'icons)))
 
@@ -521,6 +522,11 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 ;;(use-package geiser-guile
 ;;  :straight t)
+
+(use-package web-mode
+  :straight t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 
 ;; Display
 (menu-bar-mode 0)           ;; hides menu bar
@@ -765,3 +771,6 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
                          result)) 2))
 
 (setq sql-mariadb-options '("--default-character-set=utf8mb4"))
+
+;; Disable blinking cursor in terminal
+(setq visible-cursor nil)
