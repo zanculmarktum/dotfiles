@@ -30,7 +30,8 @@ printConfigOptions = f
         showMenu
         showTabBar
         cursorBlinkMode
-        boldIsBright) =
+        boldIsBright
+        enableSixel) =
       putStrLn $ unlines
         [ "ConfigOptions { fontConfig = " ++ g fontConfig
         , "              , showScrollbar = " ++ show showScrollbar
@@ -41,6 +42,7 @@ printConfigOptions = f
         , "              , showTabBar = " ++ show showTabBar
         , "              , cursorBlinkMode = " ++ show cursorBlinkMode
         , "              , boldIsBright = " ++ show boldIsBright
+        , "              , enableSixel = " ++ show enableSixel
         , "              }"]
 
     g (FontConfig fontFamily fontSize) =
