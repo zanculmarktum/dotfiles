@@ -7,8 +7,8 @@ Xft.hintstyle: hintslight
 Xft.lcdfilter: lcddefault
 
 ! URxvt
-URxvt.font:     xft:Terminus:size=8:antialias=true
-URxvt.boldFont: xft:Terminus:size=8:antialias=true
+URxvt.font:     -misc-fixed-medium-r-normal--13-*-*-*-*-*-*-*
+URxvt.boldFont: -misc-fixed-medium-r-normal--13-*-*-*-*-*-*-*
 !URxvt.font:     xft:Meslo LG S:size=8:antialias=true
 !URxvt.boldFont: xft:Meslo LG S:bold:size=8:antialias=true
 !URxvt.letterSpace: -1
@@ -18,23 +18,27 @@ URxvt.scrollBar_floating: false
 !URxvt.depth: 32
 !URxvt.background: [93]#ff00ff
 ! Enable Perl extensions
-URxvt.perl-ext-common: eval,tabbed
+URxvt.perl-ext-common: eval
+!URxvt.perl-ext-common: eval,tabbed
 ! Tab
-URxvt.tabbed.tabbar-fg: -7
-URxvt.tabbed.tabbar-bg: -1
-URxvt.tabbed.tab-fg: -7
-URxvt.tabbed.tab-bg: 0
+!URxvt.tabbed.tabbar-fg: -7
+!URxvt.tabbed.tabbar-bg: -1
+!URxvt.tabbed.tab-fg: -7
+!URxvt.tabbed.tab-bg: 0
 ! Clipboard
-URxvt.keysym.M-c: eval:selection_to_clipboard
-URxvt.keysym.M-v: eval:paste_clipboard
-URxvt.keysym.M-V: eval:paste_primary
+URxvt.keysym.Control-Shift-C: eval:selection_to_clipboard
+URxvt.keysym.Control-Shift-V: eval:paste_clipboard
+!URxvt.keysym.S-Insert: eval:paste_primary
+URxvt.keysym.C-M-c: builtin-string:
+URxvt.keysym.C-M-v: builtin-string:
 ! Scrolling
-URxvt.keysym.M-Up:   eval:scroll_up 1
-URxvt.keysym.M-Down: eval:scroll_down 1
-URxvt.keysym.S-Home: eval:scroll_to_top
-URxvt.keysym.S-End:  eval:scroll_to_bottom
+URxvt.keysym.C-S-Up:   eval:scroll_up 1
+URxvt.keysym.C-S-Down: eval:scroll_down 1
+URxvt.keysym.S-Home:   eval:scroll_to_top
+URxvt.keysym.S-End:    eval:scroll_to_bottom
 ! Disable C-Shift
-URxvt.iso14755: False
+URxvt.iso14755: false
+URxvt.iso14755_52: false
 ! Maximum lines we can scrollback
 URxvt.saveLines: 100000
 
