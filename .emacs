@@ -297,6 +297,23 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
     (when add-exec-path
       (add-to-list 'exec-path new-path))))
 
+(defun straight-list-installed-packages ()
+  (let ((packages nil))
+    (maphash (lambda (package recipe)
+               (when (or (null #'straight--installed-p)
+                         (funcall #'straight--installed-p (plist-put recipe :package package)))
+                 (push package packages)))
+             straight--recipe-cache)
+    (nreverse packages)))
+
+(defun straight-update-installed-packages ()
+  (dolist (package (straight-list-installed-packages))
+    (unless (or
+             ;; exclude the following packages
+             (string= package "cmake-mode")
+             (string= package "erlang"))
+      (straight-pull-package package))))
+
 (straight-use-package 'use-package)
 
 (use-package nord-theme
