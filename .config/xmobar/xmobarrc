@@ -1,7 +1,7 @@
 -- -*- mode: haskell -*-
 
-Config { font = "-misc-fixed-medium-r-normal--10-100-75-75-c-60-iso8859-1"
-       , additionalFonts = ["-wuncon-siji-medium-r-normal--11-*-*-*-*-*-*-*"]
+Config { font = "-misc-fixed-medium-r-normal--13-*-*-*-*-*-*-*"
+       , additionalFonts = ["-wuncon-siji-medium-r-normal--11-*-*-*-*-*-*-*", "xft:FontAwesome:pixelsize=13"]
        --, font = "xft:Terminus (TTF):size=9:antialias=false"
        --, additionalFonts = ["xft:FontAwesome:pixelsize=13"]
        , bgColor = "#2e3440"
@@ -19,26 +19,27 @@ Config { font = "-misc-fixed-medium-r-normal--10-100-75-75-c-60-iso8859-1"
                                    "--high","green",
                                    "-t","<acstatus><left>% / <timeleft>",
                                    "--",
-                                   "-O","<fc=white><fn=1></fn></fc>",
-                                   "-i","<fc=white><fn=1></fn></fc>",
-                                   "-o","<fc=white><fn=1></fn></fc>"] 10
+                                   "-O","<fc=white><icon=power-ac.xbm/></fc>",
+                                   "-i","<fc=white><icon=power-ac.xbm/></fc>",
+                                   "-o","<fc=white><icon=power-bat.xbm/></fc>"] 10
                     , Run Network "wlp3s0" ["-L","0","-H","32",
-                                            "--normal","green","--high","red","-t","<fn=1></fn><rx>KB|<tx>KB"] 10
+                                            "--normal","green","--high","red","-t","<icon=net-wifi.xbm/><rx>KB|<tx>KB"] 10
                     , Run Network "enp0s25" ["-L","0","-H","32",
-                                            "--normal","green","--high","red","-t"," <rx>KB|<tx>KB"] 10
+                                            "--normal","green","--high","red","-t"," <icon=net-wired2.xbm/><rx>KB|<tx>KB"] 10
                     , Run Cpu ["-L","3","-H","50",
-                               "--normal","green","--high","red","-t","<fn=1></fn><total>%"] 10
-                    , Run Memory ["-t","<fn=1></fn><usedratio>%"] 10
+                               "--normal","green","--high","red","-t","<icon=cpu.xbm/><total>%"] 10
+                    , Run Memory ["-t","<icon=mem.xbm/><usedratio>%"] 10
                     , Run Swap ["-t","<usedratio>%"] 10
                     , Run Com "uname" ["-s","-r"] "" 36000
-                    , Run Date "<fn=1></fn>%a %b %_d %Y %H:%M:%S" "date" 10
+                    , Run Date "<fn=2></fn>%a %b %_d %Y %H:%M:%S" "date" 10
                     , Run StdinReader
                     , Run Com ".config/xmobar/padding-icon.sh" ["panel"] "trayer" 10
-                    , Run CoreTemp ["-t", "<fn=1></fn><core0>C",
+                    , Run CoreTemp ["-t", "<icon=temp.xbm/><core0>C",
                                     "-L", "40", "-H", "60",
                                     "-l", "lightblue", "-h", "red"] 50
                     ]
        , template = " %StdinReader% }{ \
                     \%wlp3s0%%enp0s25% %battery% %cpu% %coretemp% %memory% / %swap% %date% %trayer%"
 --                  " <icon=.config/xmobar/haskell_20.xpm/> | "
+       , iconRoot = ".config/xmobar/icons"
        }
