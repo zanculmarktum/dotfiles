@@ -143,7 +143,7 @@ main :: IO ()
 main = (xmonad =<<) . xmobar . ewmhFullscreen . ewmh $ def
   { normalBorderColor  = "#a6a6a6"
   , focusedBorderColor = "#e5e9f0"
-  , terminal           = "termonad"
+  , terminal           = "urxvt"
   , layoutHook         = lessBorders OnlyScreenFloat tiled ||| Mirror tiled ||| Full
   , manageHook         = let doWindow = map . (. (className =?)) . (flip (-->))
                              float = doWindow doFloat
