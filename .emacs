@@ -314,6 +314,55 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
              (string= package "erlang"))
       (straight-pull-package package))))
 
+;; Insert numbers from n to m
+(defun insert-number (n m)
+  (dolist (x (number-sequence n m))
+    (insert (concat (int-to-string x) "\n"))))
+
+;; Copy the region into the clipboard using xclip
+(defun xclip-region ()
+  (interactive)
+  (unless (executable-find "xclip")
+    (error "xclip not found in exec-path"))
+  (shell-command-on-region (region-beginning)
+                           (region-end)
+                           "xclip -selection clipboard >/dev/null 2>&1"
+                           nil
+                           nil
+                           nil
+                           nil))
+
+;; Copy the string into the clipboard using xclip
+(defun xclip-string (input)
+  (interactive (list (read-shell-command "String input: ")))
+  (unless (executable-find "xclip")
+    (error "xclip not found in exec-path"))
+  (shell-command (concat "printf " (shell-quote-argument input) " | xclip -selection clipboard >/dev/null 2>&1")))
+
+;; Copy the kill ring into the clipboard using xclip
+(defun xclip-kill-ring ()
+  (interactive)
+  (unless (executable-find "xclip")
+    (error "xclip not found in exec-path"))
+  (shell-command (concat "printf " (shell-quote-argument (current-kill 0)) " | xclip -selection clipboard >/dev/null 2>&1")))
+
+;; Forward region to 0x0.st
+(defun 0x0 ()
+  (interactive)
+  (unless (executable-find "curl")
+    (error "curl not found in exec-path"))
+  (shell-command-on-region (region-beginning)
+                           (region-end)
+                           "curl -F file=@- https://0x0.st/"
+                           nil
+                           nil
+                           nil
+                           nil))
+
+(defun insert-css ()
+  (interactive)
+  (insert "<link rel=\"stylesheet\" type=\"text/css\" href=\"\">"))
+
 (straight-use-package 'use-package)
 
 (use-package nord-theme
@@ -659,11 +708,6 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (setq tramp-shell-prompt-pattern (concat "\\(?:^\\|\r\\)"
                                          "[^]#$%>\n]*#?[]#$%>].* *\\(\e\\[[0-9;]*[a-zA-Z] *\\)*"))
 
-;; Insert numbers from n to m
-(defun insert-number (n m)
-  (dolist (x (number-sequence n m))
-    (insert (concat (int-to-string x) "\n"))))
-
 ;; Case-insensitive file name completion
 (setq read-file-name-completion-ignore-case t)
 
@@ -687,46 +731,6 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 ;; Save minibuffer history
 (savehist-mode 1)
-
-;; Copy the region into the clipboard using xclip
-(defun xclip-region ()
-  (interactive)
-  (unless (executable-find "xclip")
-    (error "xclip not found in exec-path"))
-  (shell-command-on-region (region-beginning)
-                           (region-end)
-                           "xclip -selection clipboard >/dev/null 2>&1"
-                           nil
-                           nil
-                           nil
-                           nil))
-
-;; Copy the string into the clipboard using xclip
-(defun xclip-string (input)
-  (interactive (list (read-shell-command "String input: ")))
-  (unless (executable-find "xclip")
-    (error "xclip not found in exec-path"))
-  (shell-command (concat "printf " (shell-quote-argument input) " | xclip -selection clipboard >/dev/null 2>&1")))
-
-;; Copy the kill ring into the clipboard using xclip
-(defun xclip-kill-ring ()
-  (interactive)
-  (unless (executable-find "xclip")
-    (error "xclip not found in exec-path"))
-  (shell-command (concat "printf " (shell-quote-argument (current-kill 0)) " | xclip -selection clipboard >/dev/null 2>&1")))
-
-;; Forward region to 0x0.st
-(defun 0x0 ()
-  (interactive)
-  (unless (executable-find "curl")
-    (error "curl not found in exec-path"))
-  (shell-command-on-region (region-beginning)
-                           (region-end)
-                           "curl -F file=@- https://0x0.st/"
-                           nil
-                           nil
-                           nil
-                           nil))
 
 ;; Do not convert tag names to words in Customize, i.e. foo-bar-baz -> "Foo Bar Baz"
 (setq custom-unlispify-tag-names nil)
