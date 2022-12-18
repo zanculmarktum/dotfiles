@@ -45,6 +45,9 @@ import Data.Char
 
 import Control.Exception (SomeException, try)
 
+import XMonad.Util.NamedWindows
+import System.Directory
+
 -- Remember the spawned PIDs
 newtype SpawnOnce = SpawnOnce { unspawnOnce :: M.Map String ProcessID }
     deriving (Typeable, Read, Show)
@@ -201,6 +204,29 @@ main = xmonad . xmobarProp . ewmhFullscreen . ewmh $ def
                                              --                                       >> M.findWithDefault (return ()) (modMask conf, xK_q) (keys def conf))
                                              , ((modMask conf .|. shiftMask, xK_t), sinkAll)
                                              , ((modMask conf, xK_u), spawn "xclip -o 2>/dev/null | xargs chromium")
+                                             , ((modMask conf .|. shiftMask, xK_Return), do
+                                                   ws <- gets windowset
+                                                   let maybeStack = W.stack . W.workspace . W.current $ ws
+                                                       maybeFocus = maybe Nothing (pure . W.focus) maybeStack
+
+                                                   title <- maybe mempty (fmap show . getName) maybeFocus
+
+                                                   -- You can also use this to get the title, but `getName` method
+                                                   -- is the one being used in xmobar, `title` and `getName` code
+                                                   -- are similar enough but who knows.
+                                                   --
+                                                   -- title' <- maybe mempty (runQuery title) maybeFocus
+
+                                                   app <- maybe mempty (runQuery appName) maybeFocus
+                                                   cls <- maybe mempty (runQuery className) maybeFocus
+
+                                                   path <- maybe (pure title) ((<$> io getHomeDirectory) . (flip (++)))
+                                                     (stripPrefix "~" title)
+
+                                                   titleIsPath <- io $ doesDirectoryExist path
+                                                   if titleIsPath && app == "urxvt"
+                                                     then spawn $ terminal conf ++ " -cd " ++ path
+                                                     else spawn $ terminal conf)
                                              ]
                                   <+> keys def conf
   , borderWidth        = 2
