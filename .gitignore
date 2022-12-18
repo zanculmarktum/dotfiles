@@ -151,8 +151,11 @@
 
 # xmobar
 !.config/xmobar
+!.config/xmobar/xmobar.hs
 !.config/xmobar/xmobarrc
 !.config/xmobar/padding-icon.sh
+!.config/xmobar/icons
+!.config/xmobar/icons/**
 
 # alacritty
 !.config/alacritty

@@ -6,7 +6,8 @@
 
 import XMonad
 
-import XMonad.Hooks.DynamicLog hiding (xmobar)
+import XMonad.Hooks.DynamicLog hiding (xmobar, xmobarProp)
+import XMonad.Hooks.StatusBar
 import XMonad.Util.Run
 import XMonad.Hooks.ManageDocks
 import XMonad.Layout.LayoutModifier
@@ -136,13 +137,32 @@ xmobar = statusBar "xmobar"
                   }
          toggleStrutsKey
 
+xmobarProp :: LayoutClass l Window
+           => XConfig l  -- ^ The base config
+           -> XConfig (ModifiedLayout AvoidStruts l)
+xmobarProp =
+  withEasySB (statusBarProp "xmobar"
+              (pure xmobarPP { ppCurrent = xmobarColor yellow "" . wrap "[" "]"
+                             , ppTitle   = xmobarColor green "" . shorten 1000
+                             , ppUrgent  = xmobarColor red yellow
+                             })) toggleStrutsKey
+
 toggleStrutsKey :: XConfig t -> (KeyMask, KeySym)
 toggleStrutsKey XConfig{modMask = modm} = (modm, xK_b )
 
+black = "#4b5262"
+red = "#bf616a"
+green = "#a3be8c"
+yellow = "#ebcb8b"
+blue = "#81a1c1"
+magenta = "#b48ead"
+cyan = "#89d0bA"
+white = "#e5e9f0"
+
 main :: IO ()
-main = (xmonad =<<) . xmobar . ewmhFullscreen . ewmh $ def
+main = xmonad . xmobarProp . ewmhFullscreen . ewmh $ def
   { normalBorderColor  = "#a6a6a6"
-  , focusedBorderColor = "#e5e9f0"
+  , focusedBorderColor = white
   , terminal           = "urxvt"
   , layoutHook         = lessBorders OnlyScreenFloat tiled ||| Mirror tiled ||| Full
   , manageHook         = let doWindow = map . (. (className =?)) . (flip (-->))
