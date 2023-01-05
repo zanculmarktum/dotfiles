@@ -14,6 +14,7 @@ import XMonad.Layout.LayoutModifier
 
 import XMonad.Prompt
 import XMonad.Prompt.XMonad
+import XMonad.Prompt.FuzzyMatch
 
 import qualified XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.EwmhDesktops hiding (ewmhFullscreen,
@@ -153,6 +154,12 @@ xmobarProp =
 toggleStrutsKey :: XConfig t -> (KeyMask, KeySym)
 toggleStrutsKey XConfig{modMask = modm} = (modm, xK_b )
 
+escapeSingleQuotes :: String -> String
+escapeSingleQuotes = f . span (/= '\'')
+  where
+    f (first, "")       = first
+    f (first, (x:last)) = first ++ ("'\\" ++ [x] ++ "'") ++ escapeSingleQuotes last
+
 black = "#4b5262"
 red = "#bf616a"
 green = "#a3be8c"
@@ -197,7 +204,9 @@ main = xmonad . xmobarProp . ewmhFullscreen . ewmh $ def
   , keys               = \conf -> M.fromList [ ((modMask conf              , xK_p), spawn $ "j4-dmenu-desktop --no-generic --term=" ++ terminal conf)
                                              , ((modMask conf .|. shiftMask, xK_p), spawn "dmenu_run")
                                              , ((modMask conf              , xK_f), withFocused float)
-                                             , ((modMask conf .|. shiftMask, xK_x), xmonadPrompt def { font = "xft:Terminus:size=8" })
+                                             , ((modMask conf .|. shiftMask, xK_x), xmonadPrompt def { font = "-misc-fixed-medium-r-normal--13-*-*-*-*-*-*-*"
+                                                                                                     , searchPredicate = fuzzyMatch
+                                                                                                     })
                                              , ((modMask conf .|. shiftMask, xK_q), killOnce
                                                                                     >> M.findWithDefault (return ()) (modMask conf .|. shiftMask, xK_q) (keys def conf))
                                              --, ((modMask conf              , xK_q), killOnce
@@ -225,7 +234,7 @@ main = xmonad . xmobarProp . ewmhFullscreen . ewmh $ def
 
                                                    titleIsPath <- io $ doesDirectoryExist path
                                                    if titleIsPath && app == "urxvt"
-                                                     then spawn $ terminal conf ++ " -cd " ++ path
+                                                     then spawn $ terminal conf ++ " -cd '" ++ escapeSingleQuotes path ++ "'"
                                                      else spawn $ terminal conf)
                                              ]
                                   <+> keys def conf
