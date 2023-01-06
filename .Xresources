@@ -7,8 +7,10 @@ Xft.hintstyle: hintslight
 Xft.lcdfilter: lcddefault
 
 ! URxvt
-URxvt.font:     -misc-fixed-medium-r-normal--13-*-*-*-*-*-*-*
-URxvt.boldFont: -misc-fixed-medium-r-normal--13-*-*-*-*-*-*-*
+URxvt.font:           -misc-fixed-medium-r-normal--13-*-*-*-*-*-*-*
+URxvt.boldFont:       -misc-fixed-medium-r-normal--13-*-*-*-*-*-*-*
+URxvt.italicFont:     -misc-fixed-medium-o-normal--13-*-*-*-*-*-*-*
+URxvt.boldItalicFont: -misc-fixed-medium-o-normal--13-*-*-*-*-*-*-*
 !URxvt.font:     xft:Meslo LG S:size=8:antialias=true
 !URxvt.boldFont: xft:Meslo LG S:bold:size=8:antialias=true
 !URxvt.letterSpace: -1
