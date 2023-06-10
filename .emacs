@@ -363,6 +363,17 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   (interactive)
   (insert "<link rel=\"stylesheet\" type=\"text/css\" href=\"\">"))
 
+(defun insert-html ()
+  (interactive)
+  (insert "<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+
+    <body>
+    </body>
+</html>"))
+
 (straight-use-package 'use-package)
 
 (use-package nord-theme
@@ -594,6 +605,9 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   :config
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 
+(use-package dockerfile-mode
+  :straight t)
+
 ;; Display
 (menu-bar-mode 0)           ;; hides menu bar
 (tool-bar-mode 0)           ;; hides tool bar
@@ -795,3 +809,6 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 ;; Disable blinking cursor in terminal
 (setq visible-cursor nil)
+
+;; Don't show *Warnings* buffer
+(setq native-comp-async-report-warnings-errors 'silent)
