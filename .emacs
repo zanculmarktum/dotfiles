@@ -641,7 +641,8 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (menu-bar-mode 0)           ;; hides menu bar
 (tool-bar-mode 0)           ;; hides tool bar
 (blink-cursor-mode 0)       ;; disables cursor blinking
-(scroll-bar-mode 0)         ;; disables scroll bar
+(when (display-graphic-p)
+  (scroll-bar-mode 0))      ;; disables scroll bar
 
 ;; Frames
 (add-to-list 'default-frame-alist '(font . "Fira Code-10"))
@@ -706,7 +707,8 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 ;; Disable line wrap
 (setq-default truncate-lines t)
 (set-display-table-slot standard-display-table 'truncation 32)
-(fringe-mode 0)
+(when (display-graphic-p)
+  (fringe-mode 0))
 
 ;; Scroll one line at a time
 (setq scroll-step 1)
