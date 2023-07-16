@@ -372,7 +372,31 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
     <body>
     </body>
-</html>"))
+</html>
+"))
+
+(defun insert-form ()
+  (interactive)
+  (insert "<form class=\"needs-validation was-validated\" method=\"POST\" action=\"/\">
+  @csrf
+
+  <div>
+    <label for=\"title\" class=\"form-label\">Title</label>
+    <input type=\"text\" class=\"form-control\" id=\"title\" name=\"title\" value=\"{{ old(\'title\') }}\" required>
+  </div>
+
+  <button type=\"submit\" class=\"btn btn-primary\">Submit</button>
+</form>
+"))
+
+(defun insert-input ()
+  (interactive)
+  (insert "<div>
+  <label for=\"title\" class=\"form-label\">Title</label>
+  <input type=\"text\" class=\"form-control\" id=\"title\" name=\"title\" aria-describedby=\"titleHelp\" value=\"{{ old(\'title\') }}\" required>
+  <div id=\"titleHelp\" class=\"form-text\">Lorem ipsum dolor sit amet.</div>
+</div>
+"))
 
 (straight-use-package 'use-package)
 
@@ -607,6 +631,11 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 (use-package dockerfile-mode
   :straight t)
+
+(use-package dotenv-mode
+  :straight t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.env\\..*\\'" . dotenv-mode)))
 
 ;; Display
 (menu-bar-mode 0)           ;; hides menu bar
