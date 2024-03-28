@@ -43,6 +43,8 @@ export PROMPT_COMMAND="prompt; history -a; history -c; history -r${PROMPT_COMMAN
 # +========================================================+
 # | Colors                                                 |
 # +========================================================+
+export GROFF_NO_SGR=1 # returns the colors in groff 1.23.0 and above
+
 export LESS="$LESS -r"
 
 export LESS_TERMCAP_mb=$'\e[01;31m'      # Begins blinking.
