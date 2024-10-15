@@ -637,6 +637,12 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   :config
   (add-to-list 'auto-mode-alist '("\\.env\\..*\\'" . dotenv-mode)))
 
+(use-package romkan
+  :straight (romkan
+             :type git
+             :host github
+             :repo "gicrisf/romkan.el"))
+
 ;; Display
 (menu-bar-mode 0)           ;; hides menu bar
 (tool-bar-mode 0)           ;; hides tool bar
@@ -646,6 +652,7 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 ;; Frames
 (add-to-list 'default-frame-alist '(font . "Fira Code-10"))
+(set-fontset-font "fontset-default" 'japanese-jisx0208 (font-spec :family "Noto Sans CJK JP")) ;; :size 15
 ;;(setq default-frame-alist (cl-remove-if
 ;;                           #'(lambda (x) (eq (car x) 'font))
 ;;                           default-frame-alist))
