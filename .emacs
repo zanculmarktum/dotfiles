@@ -643,6 +643,13 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
              :host github
              :repo "gicrisf/romkan.el"))
 
+(use-package subed
+  :straight (subed
+             :type git
+             :host github
+             :repo "sachac/subed"
+             :files ("subed/*.el")))
+
 ;; Display
 (menu-bar-mode 0)           ;; hides menu bar
 (tool-bar-mode 0)           ;; hides tool bar
