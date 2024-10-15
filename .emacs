@@ -659,11 +659,14 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 ;; Frames
 (add-to-list 'default-frame-alist '(font . "Fira Code-10"))
-(set-fontset-font "fontset-default" 'japanese-jisx0208 (font-spec :family "Noto Sans CJK JP")) ;; :size 15
 ;;(setq default-frame-alist (cl-remove-if
 ;;                           #'(lambda (x) (eq (car x) 'font))
 ;;                           default-frame-alist))
 ;;(add-to-list 'default-frame-alist '(alpha . 75)) ;; transparency
+(when (display-graphic-p)
+  (set-fontset-font "fontset-default"
+                    'japanese-jisx0208
+                    (font-spec :family "Noto Sans CJK JP"))) ;; :size 15
 
 ;; Mode Line
 (line-number-mode 1)
