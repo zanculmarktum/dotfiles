@@ -39,6 +39,7 @@ export HISTCONTROL=erasedups:ignoreboth
 
 shopt -s histappend                      # append to history, don't overwrite it
 export PROMPT_COMMAND="prompt; history -a; history -c; history -r${PROMPT_COMMAND:+"; "}$PROMPT_COMMAND"
+unset PROMPT_DIRTRIM
 
 # +========================================================+
 # | Colors                                                 |
