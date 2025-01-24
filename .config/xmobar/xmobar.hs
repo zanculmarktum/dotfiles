@@ -35,7 +35,8 @@ main = xmobar =<< configFromArgs defaultConfig
                , Run $ Memory ["-t","<icon=mem.xbm/><usedratio>%"] 10
                , Run $ Swap ["-t","<usedratio>%"] 10
                , Run $ Com "uname" ["-s","-r"] "" 36000
-               , Run $ Date "<fn=2>\xf073 </fn>%a %b %_d %Y %H:%M:%S" "date" 10
+               --, Run $ Date "<fn=2>\xf073 </fn>%a %b %_d %Y %H:%M:%S" "date" 10
+               , Run $ DateZone "<fn=2>\xf073 </fn>%x（%a）%H:%M:%S" "ja_JP.UTF8" "" "date" 10
                , Run $ Com ".config/xmobar/padding-icon.sh" ["panel"] "trayer" 10
                , Run $ CoreTemp ["-t", "<icon=temp.xbm/><core0>C"
                                 ,"-L", "40", "-H", "60"
