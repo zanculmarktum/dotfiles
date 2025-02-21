@@ -173,7 +173,7 @@ function lr {
 }
 
 function getcrx {
-    echo 'https://clients2.google.com/service/update2/crx?response=redirect&acceptformat=crx2,crx3&prodversion=85&x=id%3D'"$1"'%26uc'
+    echo 'https://clients2.google.com/service/update2/crx?response=redirect&acceptformat=crx2,crx3&prodversion=126&x=id%3D'"$1"'%26uc'
 }
 
 (
@@ -250,9 +250,14 @@ function e {
 }
 
 function title {
+    local title=""
     if [[ "$(xprop WM_NAME)" =~ [^\"]*\"([^\"]*)\" ]]; then
-        echo "${BASH_REMATCH[1]}"
+        title="${BASH_REMATCH[1]}"
     fi
+    if [[ "$title" == \~/* ]]; then
+        title="$HOME/${title#\~/}"
+    fi
+    echo "$title"
 }
 
 # vim:ft=sh
