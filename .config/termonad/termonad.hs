@@ -7,7 +7,7 @@ import Termonad.Prelude ( void, readMVar, fromMaybe )
 import Termonad.Config.Colour
 
 import Termonad.Types
-import Termonad.Lenses ( lensTMStateAppWin )
+import Termonad.Startup ( defaultMain )
 import GI.Gtk ( windowSetTitle )
 import GI.Vte
   ( Terminal
@@ -31,7 +31,8 @@ printConfigOptions = f
         showTabBar
         cursorBlinkMode
         boldIsBright
-        enableSixel) =
+        enableSixel
+        allowBold) =
       putStrLn $ unlines
         [ "ConfigOptions { fontConfig = " ++ g fontConfig
         , "              , showScrollbar = " ++ show showScrollbar
@@ -43,6 +44,7 @@ printConfigOptions = f
         , "              , cursorBlinkMode = " ++ show cursorBlinkMode
         , "              , boldIsBright = " ++ show boldIsBright
         , "              , enableSixel = " ++ show enableSixel
+        , "              , allowBold = " ++ show allowBold
         , "              }"]
 
     g (FontConfig fontFamily fontSize) =
@@ -107,22 +109,23 @@ configOptions =
     , showMenu = False
     , cursorBlinkMode = CursorBlinkModeOff }
 
--- Taken from https://github.com/cdepillabout/termonad/issues/186
-customCreateTermHook :: TMState -> Terminal -> IO ()
-customCreateTermHook tmState vteTerm = do
-  void $ onTerminalWindowTitleChanged vteTerm $ do
-    maybeTitle <- terminalGetWindowTitle vteTerm
-    let title = fromMaybe "shell" maybeTitle
+-- -- Taken from https://github.com/cdepillabout/termonad/issues/186
+-- customCreateTermHook :: TMState -> Terminal -> IO ()
+-- customCreateTermHook tmState vteTerm = do
+--   void $ onTerminalWindowTitleChanged vteTerm $ do
+--     maybeTitle <- terminalGetWindowTitle vteTerm
+--     let title = fromMaybe "shell" maybeTitle
 
-    tmState <- readMVar tmState
-    let win = tmState ^. lensTMStateAppWin
+--     tmState <- readMVar tmState
+--     let win = tmState ^. lensTMStateAppWin
 
-    windowSetTitle win title
+--     windowSetTitle win title
 
 config :: TMConfig
 config = TMConfig
   configOptions
-  (ConfigHooks customCreateTermHook) -- defaultConfigHooks
+  defaultConfigHooks -- (ConfigHooks customCreateTermHook)
 
 main :: IO ()
-main = start . addColourExtension config =<< createColourExtension nord
+main = do
+  defaultMain . addColourExtension config =<< createColourExtension nord
