@@ -241,7 +241,7 @@ function unicode-hex {
 function e {
     local TMP;
     if [[ "$1" == "-" ]]; then
-        TMP="$(mktemp /tmp/emacsstdinXXX)";
+        TMP="$(mktemp -t emacsstdinXXX)";
         cat >"$TMP";
         emacsclient -nw --eval "(let ((b (create-file-buffer \"*stdin*\"))) (switch-to-buffer b) (insert-file-contents \"${TMP}\") (delete-file \"${TMP}\"))"
     else
