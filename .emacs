@@ -531,9 +531,9 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot-mode" t)
   (setq auto-mode-alist (append '(("\\.gp$" . gnuplot-mode)) auto-mode-alist)))
 
-(use-package selectrum
-  :straight t
-  :config (selectrum-mode +1))
+;; (use-package selectrum
+;;   :straight t
+;;   :config (selectrum-mode +1))
 
 ;;(use-package icomplete-vertical
 ;;  :straight t
@@ -593,19 +593,19 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   (global-set-key (kbd "M-n") 'move-text-down)
   (global-set-key (kbd "M-p") 'move-text-up))
 
-(use-package doom-modeline
-  :straight t
-  :init
-  (doom-modeline-mode 1)
-  :config
-  (setq doom-modeline-buffer-file-name-style 'buffer-name))
+;; (use-package doom-modeline
+;;   :straight t
+;;   :init
+;;   (doom-modeline-mode 1)
+;;   :config
+;;   (setq doom-modeline-buffer-file-name-style 'buffer-name))
 
-(use-package doom-themes
-  :straight t
-  ;;:config
-  ;;(load-theme 'doom-nord t)
-  ;;(doom-themes-neotree-config)
-  )
+;; (use-package doom-themes
+;;   :straight t
+;;   ;;:config
+;;   ;;(load-theme 'doom-nord t)
+;;   ;;(doom-themes-neotree-config)
+;;   )
 
 (use-package centaur-tabs
   :straight t
@@ -621,8 +621,8 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   ;;(global-set-key (kbd "C-<next>") 'centaur-tabs-forward)
   )
 
-;;(use-package geiser-guile
-;;  :straight t)
+(use-package geiser-guile
+ :straight t)
 
 (use-package web-mode
   :straight t
@@ -681,6 +681,10 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (customize-set-variable
  'tramp-backup-directory-alist backup-directory-alist)
 
+;; Set the location for Custom config file
+(setq custom-file (expand-file-name "custom" user-emacs-directory))
+(load custom-file)
+
 ;; Highlight parentheses
 (setq show-paren-delay 0)
 (show-paren-mode 1)
@@ -693,7 +697,13 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
     (defun display-line-numbers--turn-on ()
        "Turn on line numbers but excempting certain majore modes."
        (if (and
-            (not (member major-mode '(help-mode Info-mode ibuffer-mode dired-mode occur-mode neotree-mode)))
+            (not (member major-mode '(help-mode
+                                      Info-mode
+                                      ibuffer-mode
+                                      dired-mode
+                                      occur-mode
+                                      neotree-mode
+                                      Man-mode)))
             (not (minibufferp)))
            (display-line-numbers-mode)))
     (global-display-line-numbers-mode)))
