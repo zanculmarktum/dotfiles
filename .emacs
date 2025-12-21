@@ -400,8 +400,14 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 (straight-use-package 'use-package)
 
+(setq package-native-compile t)
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
 (use-package nord-theme
-  :straight t
+  ;; :straight t
+  :ensure t
   :config (load-theme 'nord t))
 ;; To show currently enabled themes:
 ;; M-: custom-enabled-themes
@@ -409,6 +415,7 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (require 'info)
 (info-initialize)
 
+;;; https://www.emacswiki.org/emacs/ModeLinePosition
 (use-package modeline-posn
   :straight t
   :config
@@ -422,10 +429,12 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 ;;(when (executable-find "xclip")
 ;;  (use-package xclip
 ;;    :straight t
+;;    :ensure t
 ;;    :config (xclip-mode 1)))
 
 (use-package highlight-indent-guides
-  :straight t
+  ;; :straight t
+  :ensure t
   :config
   ;;(highlight-indent-guides-mode 1)
   ;;(add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
@@ -458,136 +467,149 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 ;; M-: (face-all-attributes 'highlight-indent-guides-character-face)
 
 (use-package f
-  :straight t)
+  ;; :straight t
+  :ensure t)
 (use-package nix-mode
-  :straight t
+  ;; :straight t
+  :ensure t
   :config
-  (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode))
   (setq nix-indent-function 'nix-indent-line))
 
 (use-package markdown-mode
-  :straight t
+  ;; :straight t
+  :ensure t
   :config
-  (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-  (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+  ;; For GitHub Flavored Markdown files
   (add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode)))
 
 (use-package yaml-mode
-  :straight t
-  :config
-  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+  ;; :straight t
+  :ensure t)
 
 (use-package git-modes
-  :straight t)
+  ;; :straight t
+  :ensure t)
 
 (use-package command-log-mode
-  :straight t
+  ;; :straight t
+  :ensure t
   ;; :config (global-command-log-mode)
   )
 
 (use-package haskell-mode
-  :straight t
+  ;; :straight t
+  :ensure t
   :config
   ;;(require 'haskell-mode-autoloads)
   ;;(add-to-list 'Info-directory-list
   ;;             (expand-file-name "straight/repos/haskell-mode" user-emacs-directory))
   )
 
-(straight-fetch-gitlab-blobs 'cmake-mode)
+;; (straight-fetch-gitlab-blobs 'cmake-mode)
 (use-package cmake-mode
-  :straight t)
+  ;; :straight t
+  :ensure t)
 
 (use-package tuareg
-  :straight t
+  ;; :straight t
+  :ensure t
   :config
-  (add-to-list 'auto-mode-alist '("\\.ml[ip]?\\'" . tuareg-mode))
-  (add-to-list 'auto-mode-alist '("\\.eliomi?\\'" . tuareg-mode))
-  (dolist (ext '(".cmo" ".cmx" ".cma" ".cmxa" ".cmi"
-                  ".annot" ".cmt" ".cmti"))
-    (add-to-list 'completion-ignored-extensions ext))
   (add-to-list 'auto-mode-alist '("\\.ocamlinit\\'" . tuareg-mode)))
 
-(straight-fetch-github-blobs 'erlang)
+;; (straight-fetch-github-blobs 'erlang)
 (use-package erlang
-  :straight t
+  ;; :straight t
+  :ensure t
   :config (require 'erlang-start))
 
 (use-package neotree
-  :straight t
+  ;; :straight t
+  :ensure t
   :config
   (global-set-key (kbd "<f8>") 'neotree-toggle)
   (setq ;;neo-smart-open t
-        neo-autorefresh nil
-        neo-show-hidden-files t
-        neo-window-fixed-size nil
-        neo-auto-indent-point t)
+   neo-autorefresh nil
+   neo-show-hidden-files t
+   neo-window-fixed-size nil
+   neo-auto-indent-point t)
   (when (display-graphic-p)
     (setq neo-theme 'icons)))
 
 (use-package gnuplot
-  :straight t
-  :config
-  (autoload 'gnuplot-mode "gnuplot" "Gnuplot major mode" t)
-  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot-mode" t)
-  (setq auto-mode-alist (append '(("\\.gp$" . gnuplot-mode)) auto-mode-alist)))
+  ;; :straight t
+  :ensure t)
 
 ;; (use-package selectrum
 ;;   :straight t
+;;   :ensure t
 ;;   :config (selectrum-mode +1))
 
 ;;(use-package icomplete-vertical
 ;;  :straight t
+;;  :ensure t
 ;;  :config
 ;;  ;; (icomplete-mode)
 ;;  ;; (icomplete-vertical-mode)
 ;;  )
 
 (use-package lua-mode
-  :straight t
+  ;; :straight t
+  :ensure t
   :config
   (setq lua-indent-level 2
         lua-documentation-url "https://www.lua.org/manual/5.3/manual.html"))
 
-(use-package editorconfig
-  :straight t
-  :config
-  (editorconfig-mode 1)
-  (setq minor-mode-alist
-        (cl-remove-if (lambda (x)
-                        (equal (car x) 'editorconfig-mode))
-                      minor-mode-alist)))
+(if (version< emacs-version "30.1")
+    (use-package editorconfig
+      ;; :straight t
+      :ensure t
+      :config
+      (editorconfig-mode 1)
+      (setq minor-mode-alist
+            (cl-remove-if (lambda (x)
+                            (equal (car x) 'editorconfig-mode))
+                          minor-mode-alist)))
+  (editorconfig-mode 1))
 
 (use-package rainbow-mode
-  :straight t)
+  ;; :straight t
+  :ensure t)
 
 (use-package tex
-  :straight auctex
+  ;; :straight auctex
+  :ensure auctex
   :config
   (setq TeX-view-program-list (append TeX-view-program-list '(("zathura" "zathura -P %(outpage) %o")))
         TeX-view-program-selection (cl-mapcar #'(lambda (x) (if (eq (car x) 'output-pdf) '(output-pdf "zathura") x)) TeX-view-program-selection))
   (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode))
 
 (use-package rust-mode
-  :straight t)
+  ;; :straight t
+  :ensure t)
 
 (use-package php-mode
-  :straight t)
+  ;; :straight t
+  :ensure t)
 
 (use-package typescript-mode
-  :straight t
+  ;; :straight t
+  :ensure t
   :config
-  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
   (setq typescript-indent-level 2))
 
 (use-package vue-mode
-  :straight t)
+  ;; :straight t
+  :ensure t)
 
-(use-package all-the-icons
-  :straight t
-  :if (display-graphic-p))
+(when (display-graphic-p)
+  (use-package all-the-icons
+    ;; :straight t
+    ;; :if (display-graphic-p)
+    :ensure t))
 
 (use-package move-text
-  :straight t
+  ;; :straight t
+  :ensure t
   :config
   ;;(move-text-default-bindings)
   (global-set-key (kbd "M-n") 'move-text-down)
@@ -595,6 +617,7 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 ;; (use-package doom-modeline
 ;;   :straight t
+;;   :ensure t
 ;;   :init
 ;;   (doom-modeline-mode 1)
 ;;   :config
@@ -602,13 +625,15 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 ;; (use-package doom-themes
 ;;   :straight t
+;;   :ensure t
 ;;   ;;:config
 ;;   ;;(load-theme 'doom-nord t)
 ;;   ;;(doom-themes-neotree-config)
 ;;   )
 
 (use-package centaur-tabs
-  :straight t
+  ;; :straight t
+  :ensure t
   ;;:config
   ;;(centaur-tabs-mode t)
   ;;(centaur-tabs-change-fonts "Fira Code" 100)
@@ -622,33 +647,68 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   )
 
 (use-package geiser-guile
- :straight t)
+  ;; :straight t
+  :ensure t)
 
 (use-package web-mode
-  :straight t
+  ;; :straight t
+  :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 
 (use-package dockerfile-mode
-  :straight t)
+  ;; :straight t
+  :ensure t)
 
 (use-package dotenv-mode
-  :straight t
+  ;; :straight t
+  :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.env\\..*\\'" . dotenv-mode)))
 
 (use-package romkan
-  :straight (romkan
-             :type git
-             :host github
-             :repo "gicrisf/romkan.el"))
+  ;; :straight (romkan
+  ;;            :type git
+  ;;            :host github
+  ;;            :repo "gicrisf/romkan.el")
+  :ensure t)
 
 (use-package subed
-  :straight (subed
-             :type git
-             :host github
-             :repo "sachac/subed"
-             :files ("subed/*.el")))
+  ;; :straight (subed
+  ;;            :type git
+  ;;            :host github
+  ;;            :repo "sachac/subed"
+  ;;            :files ("subed/*.el"))
+  :ensure t)
+
+(use-package racket-mode
+  ;; :straight t
+  :ensure t)
+
+(use-package go-mode
+  ;; :straight t
+  :ensure t)
+
+(use-package xonsh-mode
+  ;; :straight t
+  :ensure t)
+
+(use-package paredit
+  ;; :straight t
+  :ensure t
+  :config
+  (eval-after-load 'paredit
+    '(progn
+       (define-key paredit-mode-map (kbd "M-r") nil)
+       (define-key paredit-mode-map (kbd "M-s") nil)
+       (define-key paredit-mode-map (kbd "RET") nil)))
+  (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+  (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+  ;; (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+  (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook           #'enable-paredit-mode))
 
 ;; Display
 (menu-bar-mode 0)           ;; hides menu bar
@@ -683,7 +743,7 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 ;; Set the location for Custom config file
 (setq custom-file (expand-file-name "custom" user-emacs-directory))
-(load custom-file)
+(load custom-file nil 'nomessage)
 
 ;; Highlight parentheses
 (setq show-paren-delay 0)
@@ -695,17 +755,17 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   (progn
     (require 'display-line-numbers)
     (defun display-line-numbers--turn-on ()
-       "Turn on line numbers but excempting certain majore modes."
-       (if (and
-            (not (member major-mode '(help-mode
-                                      Info-mode
-                                      ibuffer-mode
-                                      dired-mode
-                                      occur-mode
-                                      neotree-mode
-                                      Man-mode)))
-            (not (minibufferp)))
-           (display-line-numbers-mode)))
+      "Turn on line numbers but excempting certain majore modes."
+      (if (and
+           (not (member major-mode '(help-mode
+                                     Info-mode
+                                     ibuffer-mode
+                                     dired-mode
+                                     occur-mode
+                                     neotree-mode
+                                     Man-mode)))
+           (not (minibufferp)))
+          (display-line-numbers-mode)))
     (global-display-line-numbers-mode)))
 
 ;; Disregard read-only-mode
@@ -730,6 +790,9 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 ;; Don't insert tabs
 (setq-default indent-tabs-mode nil)
+
+;; Set tab length
+(setq-default tab-width 4)
 
 ;; Disable line wrap
 (setq-default truncate-lines t)
@@ -769,12 +832,12 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 ;;(add-to-list 'term-file-aliases '("alacritty" . "xterm"))
 
 ;; Set CC Mode indentation
-;;(add-hook 'c-mode-common-hook (lambda ()
-;;                                (setq c-basic-offset 4)))
+(add-hook 'c-mode-common-hook (lambda ()
+                                (setq c-basic-offset 4)))
 
 ;; Set sh-script mode indentation
-;;(add-hook 'sh-mode-hook (lambda ()
-;;                          (setq sh-basic-offset 2)))
+(add-hook 'sh-mode-hook (lambda ()
+                          (setq sh-basic-offset 2)))
 
 ;; Fix TRAMP hanging
 (setq tramp-shell-prompt-pattern (concat "\\(?:^\\|\r\\)"
@@ -870,3 +933,6 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 ;; Don't show *Warnings* buffer
 (setq native-comp-async-report-warnings-errors 'silent)
+
+;; Use the other window as target for copying and moving files
+(setq dired-dwim-target t)
