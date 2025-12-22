@@ -6,24 +6,24 @@
 (when (version<= "27" emacs-version)
   (setq package-enable-at-startup nil))
 
-(defvar bootstrap-version)
-(let* ((bootstrap-file
-        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-       (bootstrap-version 5)
-       (install-file
-        (concat (file-name-directory bootstrap-file) "install.el")))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://github.com/raxod502/straight.el/raw/master/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp))
-    ;;(load install-file nil 'nomessage)
-    )
-  (load bootstrap-file nil 'nomessage))
+;; (defvar bootstrap-version)
+;; (let* ((bootstrap-file
+;;         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+;;        (bootstrap-version 5)
+;;        (install-file
+;;         (concat (file-name-directory bootstrap-file) "install.el")))
+;;   (unless (file-exists-p bootstrap-file)
+;;     (with-current-buffer
+;;         (url-retrieve-synchronously
+;;          "https://github.com/raxod502/straight.el/raw/master/install.el"
+;;          'silent 'inhibit-cookies)
+;;       (goto-char (point-max))
+;;       (eval-print-last-sexp)))
+;;     ;;(load install-file nil 'nomessage)
 
-(require 'straight-x)
+;;   (load bootstrap-file nil 'nomessage))
+
+;; (require 'straight-x)
 
 (defun straight-recipes-find (pat &optional print-repo)
   (let* ((find (lambda (repo)
@@ -105,8 +105,8 @@ Example:
                                       (setq filename
                                             (replace-regexp-in-string
                                              "\\.el\\.in\\'" ".el" filename 'fixedcase)))
-                                    (cons spec (concat prefix filename))
-                                    ))
+                                    (cons spec (concat prefix filename))))
+
                             files)))
                     ((not (consp spec))
                      (error "Invalid entry in :files directive: %S" spec))
@@ -148,8 +148,8 @@ Example:
       (type host branch repo local-repo files package flavor)
     (unless (file-exists-p (straight--repos-dir local-repo))
       (cl-mapcar #'(lambda (wildcard)
-                     (funcall f repo local-repo (or branch "master") nil wildcard)
-                     )
+                     (funcall f repo local-repo (or branch "master") nil wildcard))
+
                  (cl-mapcar #'listify-wildcard
                             (straight-get-files-wildcard files "" flavor))))))
 
@@ -163,9 +163,9 @@ Example:
                          (let* ((name (gethash "name" hash))
                                 (type (gethash "type" hash))
                                 (download-url (gethash "download_url" hash))
-                                (path (gethash "path" hash))
+                                (path (gethash "path" hash)))
                                 ;;(target (gethash "target" hash))
-                                )
+
                            (make-directory default-directory t)
                            (when (wildcard-match-p first name)
                              (cond ((string= type "file")
@@ -398,9 +398,11 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 </div>
 "))
 
-(straight-use-package 'use-package)
+;; (straight-use-package 'use-package)
 
 (setq package-native-compile t)
+(setq package-archive-priorities '(("gnu" . 900)
+                                   ("nongnu" . 800)))
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
@@ -416,12 +418,20 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (info-initialize)
 
 ;;; https://www.emacswiki.org/emacs/ModeLinePosition
-(use-package modeline-posn
-  :straight t
-  :config
-  (set-face-attribute 'modelinepos-region nil :inherit 'mode-line)
-  (set-face-attribute 'modelinepos-region-acting-on nil :inherit 'mode-line)
-  (set-face-attribute 'modelinepos-region-acting-on nil :box 'unspecified))
+(let ((file (concat (expand-file-name "modeline-posn" user-emacs-directory) "/modeline-posn.el")))
+  (unless (file-exists-p file)
+    (progn (make-directory (file-name-directory file) t)
+           ;; https://github.com/emacsmirror/modeline-posn/raw/master/modeline-posn.el
+           (fetch-file "https://www.emacswiki.org/emacs/download/modeline-posn.el"
+                       file)))
+  (add-to-list 'load-path (file-name-directory file)))
+(require 'modeline-posn)
+;; (use-package modeline-posn
+;;   :straight t
+;;   :config)
+(set-face-attribute 'modelinepos-region nil :inherit 'mode-line)
+(set-face-attribute 'modelinepos-region-acting-on nil :inherit 'mode-line)
+(set-face-attribute 'modelinepos-region-acting-on nil :box 'unspecified)
 ;; To show current value:
 ;; M-: (face-attribute 'modelinepos-region :inherit)
 ;; M-: (face-all-attributes 'modelinepos-region)
@@ -445,9 +455,9 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
                 (let ((size (file-attribute-size (file-attributes (buffer-name))))
                       (large-file-warning-threshold 500000))
                   (unless (and large-file-warning-threshold size
-                               (> size large-file-warning-threshold))
+                               (> size large-file-warning-threshold))))))
                     ;;(highlight-indent-guides-mode 1)
-                    ))))
+
 
   (setq highlight-indent-guides-method 'character)
   (setq highlight-indent-guides-auto-enabled nil)
@@ -456,9 +466,9 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   (when (memq 'nord custom-enabled-themes)
     (if (display-graphic-p)
         (set-face-attribute 'highlight-indent-guides-character-face nil :foreground "#3b4252")
-      (set-face-attribute 'highlight-indent-guides-character-face nil :foreground "black"))
+      (set-face-attribute 'highlight-indent-guides-character-face nil :foreground "black")))
     ;;(set-face-attribute 'highlight-indent-guides-character-face nil :foreground (face-attribute 'tty-menu-disabled-face :foreground))
-    )
+
 
   ;; Delete " h-i-g" indicator from mode line
   (setq minor-mode-alist (assoc-delete-all 'highlight-indent-guides-mode minor-mode-alist)))
@@ -466,9 +476,6 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 ;; M-: (face-attribute 'highlight-indent-guides-character-face :foreground)
 ;; M-: (face-all-attributes 'highlight-indent-guides-character-face)
 
-(use-package f
-  ;; :straight t
-  :ensure t)
 (use-package nix-mode
   ;; :straight t
   :ensure t
@@ -492,18 +499,18 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 (use-package command-log-mode
   ;; :straight t
-  :ensure t
+  :ensure t)
   ;; :config (global-command-log-mode)
-  )
+
 
 (use-package haskell-mode
   ;; :straight t
   :ensure t
-  :config
+  :config)
   ;;(require 'haskell-mode-autoloads)
   ;;(add-to-list 'Info-directory-list
   ;;             (expand-file-name "straight/repos/haskell-mode" user-emacs-directory))
-  )
+
 
 ;; (straight-fetch-gitlab-blobs 'cmake-mode)
 (use-package cmake-mode
@@ -633,7 +640,7 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 (use-package centaur-tabs
   ;; :straight t
-  :ensure t
+  :ensure t)
   ;;:config
   ;;(centaur-tabs-mode t)
   ;;(centaur-tabs-change-fonts "Fira Code" 100)
@@ -644,7 +651,6 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   ;;      centaur-tabs-set-modified-marker t)
   ;;(global-set-key (kbd "C-<prior>")  'centaur-tabs-backward)
   ;;(global-set-key (kbd "C-<next>") 'centaur-tabs-forward)
-  )
 
 (use-package geiser-guile
   ;; :straight t
@@ -697,11 +703,34 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   ;; :straight t
   :ensure t
   :config
+  ;; Define `{' and `<' keys to automatically close
+  ;; when inserted.
+  (setq paredit-commands
+        (append paredit-commands
+                '(("{" paredit-open-curly)
+                  ("}" paredit-close-curly))
+                '(("<" paredit-open-angled)
+                  (">" paredit-close-angled))))
+  ;; Needs to replace `matching-paren' in `paredit.el' with
+  ;; something like the following, in order to make `DEL'
+  ;; key deletes both curly {|} and angled <|>.
+  ;; (defun matching-paren (character)
+  ;;   (cond ((eq character ?\()
+  ;;          ?\))
+  ;;         ((eq character ?\[)
+  ;;          ?\])
+  ;;         ((eq character ?\{)
+  ;;          ?\})
+  ;;         ((eq character ?\<)
+  ;;          ?\>)))
+  (paredit-define-keys)
+
   (eval-after-load 'paredit
     '(progn
        (define-key paredit-mode-map (kbd "M-r") nil)
        (define-key paredit-mode-map (kbd "M-s") nil)
        (define-key paredit-mode-map (kbd "RET") nil)))
+
   (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
   (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
   ;; (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
@@ -709,6 +738,14 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
   (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
   (add-hook 'scheme-mode-hook           #'enable-paredit-mode))
+
+(use-package clojure-mode
+  ;; :straight t
+  :ensure t)
+
+(use-package cider
+  ;; :straight t
+  :ensure t)
 
 ;; Display
 (menu-bar-mode 0)           ;; hides menu bar
@@ -755,7 +792,7 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   (progn
     (require 'display-line-numbers)
     (defun display-line-numbers--turn-on ()
-      "Turn on line numbers but excempting certain majore modes."
+      "Turn on line numbers but excempting certain major modes."
       (if (and
            (not (member major-mode '(help-mode
                                      Info-mode
@@ -763,7 +800,9 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
                                      dired-mode
                                      occur-mode
                                      neotree-mode
-                                     Man-mode)))
+                                     Man-mode
+                                     completion-list-mode
+                                     special-mode)))
            (not (minibufferp)))
           (display-line-numbers-mode)))
     (global-display-line-numbers-mode)))
@@ -784,9 +823,9 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 ;; File completions
 (global-set-key (kbd "C-c C-f")
-                'comint-dynamic-complete-filename
+                'comint-dynamic-complete-filename)
                 ;;'comint-replace-by-expanded-filename
-                )
+
 
 ;; Don't insert tabs
 (setq-default indent-tabs-mode nil)
