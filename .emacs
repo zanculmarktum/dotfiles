@@ -406,11 +406,13 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
+(setq use-package-always-defer t)
 
 (use-package nord-theme
   ;; :straight t
   :ensure t
-  :config (load-theme 'nord t))
+  :init
+  (load-theme 'nord t))
 ;; To show currently enabled themes:
 ;; M-: custom-enabled-themes
 
@@ -418,7 +420,7 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (info-initialize)
 
 ;;; https://www.emacswiki.org/emacs/ModeLinePosition
-(let ((file (concat (expand-file-name "modeline-posn" user-emacs-directory) "/modeline-posn.el")))
+(let ((file (expand-file-name "lisp/modeline-posn/modeline-posn.el" user-emacs-directory)))
   (unless (file-exists-p file)
     (progn (make-directory (file-name-directory file) t)
            ;; https://github.com/emacsmirror/modeline-posn/raw/master/modeline-posn.el
@@ -445,20 +447,18 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (use-package highlight-indent-guides
   ;; :straight t
   :ensure t
-  :config
+  ;;:init
   ;;(highlight-indent-guides-mode 1)
   ;;(add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
-
   ;; Don't enable if the size of the file is too big
-  (add-hook 'find-file-hook
-            #'(lambda ()
-                (let ((size (file-attribute-size (file-attributes (buffer-name))))
-                      (large-file-warning-threshold 500000))
-                  (unless (and large-file-warning-threshold size
-                               (> size large-file-warning-threshold))))))
-                    ;;(highlight-indent-guides-mode 1)
-
-
+  ;; (add-hook 'find-file-hook
+  ;;           #'(lambda ()
+  ;;               (let ((size (file-attribute-size (file-attributes (buffer-name))))
+  ;;                     (large-file-warning-threshold 500000))
+  ;;                 (unless (and large-file-warning-threshold size
+  ;;                              (> size large-file-warning-threshold))
+  ;;                   (highlight-indent-guides-mode 1)))))
+  :config
   (setq highlight-indent-guides-method 'character)
   (setq highlight-indent-guides-auto-enabled nil)
 
@@ -502,11 +502,9 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   :ensure t)
   ;; :config (global-command-log-mode)
 
-
 (use-package haskell-mode
   ;; :straight t
-  :ensure t
-  :config)
+  :ensure t)
   ;;(require 'haskell-mode-autoloads)
   ;;(add-to-list 'Info-directory-list
   ;;             (expand-file-name "straight/repos/haskell-mode" user-emacs-directory))
@@ -527,7 +525,8 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (use-package erlang
   ;; :straight t
   :ensure t
-  :config (require 'erlang-start))
+  :init
+  (require 'erlang-start))
 
 (use-package neotree
   ;; :straight t
@@ -540,7 +539,7 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
    neo-window-fixed-size nil
    neo-auto-indent-point t)
   (when (display-graphic-p)
-    (setq neo-theme 'icons)))
+    (setq neo-theme 'nerd-icons)))
 
 (use-package gnuplot
   ;; :straight t
@@ -550,6 +549,11 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 ;;   :straight t
 ;;   :ensure t
 ;;   :config (selectrum-mode +1))
+
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode t))
 
 ;;(use-package icomplete-vertical
 ;;  :straight t
@@ -617,7 +621,7 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (use-package move-text
   ;; :straight t
   :ensure t
-  :config
+  :init
   ;;(move-text-default-bindings)
   (global-set-key (kbd "M-n") 'move-text-down)
   (global-set-key (kbd "M-p") 'move-text-up))
@@ -702,6 +706,15 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (use-package paredit
   ;; :straight t
   :ensure t
+  :init
+  (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+  (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+  ;; (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+  (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+  (add-hook 'clojure-mode-hook          #'enable-paredit-mode)
   :config
   ;; Define `{' and `<' keys to automatically close
   ;; when inserted.
@@ -709,8 +722,9 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
         (append paredit-commands
                 '(("{" paredit-open-curly)
                   ("}" paredit-close-curly))
-                '(("<" paredit-open-angled)
-                  (">" paredit-close-angled))))
+                ;; '(("<" paredit-open-angled)
+                ;;   (">" paredit-close-angled))
+                ))
   ;; Needs to replace `matching-paren' in `paredit.el' with
   ;; something like the following, in order to make `DEL'
   ;; key deletes both curly {|} and angled <|>.
@@ -729,15 +743,7 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
     '(progn
        (define-key paredit-mode-map (kbd "M-r") nil)
        (define-key paredit-mode-map (kbd "M-s") nil)
-       (define-key paredit-mode-map (kbd "RET") nil)))
-
-  (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
-  (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
-  ;; (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-  (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
-  (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
-  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-  (add-hook 'scheme-mode-hook           #'enable-paredit-mode))
+       (define-key paredit-mode-map (kbd "RET") nil))))
 
 (use-package clojure-mode
   ;; :straight t
@@ -746,6 +752,11 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (use-package cider
   ;; :straight t
   :ensure t)
+
+(use-package rainbow-delimiters
+  :ensure t
+  :init
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 ;; Display
 (menu-bar-mode 0)           ;; hides menu bar
