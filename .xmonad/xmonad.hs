@@ -15,6 +15,7 @@ import XMonad.Layout.LayoutModifier
 import XMonad.Prompt
 import XMonad.Prompt.XMonad
 import XMonad.Prompt.FuzzyMatch
+import XMonad.Prompt.Window
 
 import qualified XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.EwmhDesktops hiding (ewmhFullscreen,
@@ -48,6 +49,10 @@ import Control.Exception (SomeException, try)
 
 import XMonad.Util.NamedWindows
 import System.Directory
+
+import XMonad.Layout.SimplestFloat
+import XMonad.Layout.WindowArranger (WindowArranger, windowArrangeAll)
+import System.IO
 
 -- Remember the spawned PIDs
 newtype SpawnOnce = SpawnOnce { unspawnOnce :: M.Map String ProcessID }
@@ -137,7 +142,7 @@ fullscreenEventHook _ = return $ All True
 xmobar :: LayoutClass l Window
        => XConfig l -> IO (XConfig (ModifiedLayout AvoidStruts l))
 xmobar = statusBar "xmobar"
-         xmobarPP { ppTitle = xmobarColor "green"  "" . shorten 1000
+         xmobarPP { ppTitle = xmobarColor green  "" . shorten 1000
                   }
          toggleStrutsKey
 
@@ -146,7 +151,7 @@ xmobarProp :: LayoutClass l Window
            -> XConfig (ModifiedLayout AvoidStruts l)
 xmobarProp =
   withEasySB (statusBarProp "xmobar"
-              (pure xmobarPP { ppCurrent = xmobarColor yellow "" . wrap "[" "]"
+              (pure xmobarPP { ppCurrent = xmobarColor yellow "" . wrap "「" "」" . tail . init
                              , ppTitle   = xmobarColor green "" . shorten 1000
                              , ppUrgent  = xmobarColor red yellow
                              })) toggleStrutsKey
@@ -160,6 +165,7 @@ escapeSingleQuotes = f . span (/= '\'')
     f (first, "")       = first
     f (first, (x:last)) = first ++ ("'\\" ++ [x] ++ "'") ++ escapeSingleQuotes last
 
+{-
 black = "#4b5262"
 red = "#bf616a"
 green = "#a3be8c"
@@ -168,38 +174,56 @@ blue = "#81a1c1"
 magenta = "#b48ead"
 cyan = "#89d0bA"
 white = "#e5e9f0"
+-}
+
+black = "#3b4252"
+red = "#bf616a"
+green = "#a3be8c"
+yellow = "#ebcb8b"
+blue = "#81a1c1"
+magenta = "#b48ead"
+cyan = "#88c0d0"
+white = "#e5e9f0"
 
 main :: IO ()
 main = xmonad . xmobarProp . ewmhFullscreen . ewmh $ def
   { normalBorderColor  = "#a6a6a6"
   , focusedBorderColor = white
-  , terminal           = "urxvt"
-  , layoutHook         = lessBorders OnlyScreenFloat tiled ||| Mirror tiled ||| Full
+  , terminal           = "termonad"
+  , layoutHook         = borderless simplestFloat
+                         ||| borderless tiled
+                         ||| borderless (Mirror tiled)
+                         ||| borderless Full
   , manageHook         = let doWindow = map . (. (className =?)) . (flip (-->))
                              float = doWindow doFloat
                              centerFloat = doWindow doCenterFloat
                              match p s = (== s) . map toLower . take (length s) <$> p
-                         in composeAll (float ["mpv", "MEGAsync", "factorio", "Display", "gzdoom"
-                                              ,"explorer.exe", "regedit.exe", "control.exe"
-                                              ,"kmplot", "qt5ct", "milkytracker", "vlc"
-                                              ,"ollydbg.exe", "ZeGrapher"]
-                                        ++ centerFloat ["Sxiv","Zathura","Org.gnome.Nautilus"
-                                                       ,"Qemu-system-x86_64","Qemu-system-i386"
-                                                       ,"Lxappearance"]
-                                        ++ [ stringProperty "_GTK_APPLICATION_ID" =? "io.otsaloma.gaupol" --> doFloat
-                                           , match className "minecraft" --> doFloat -- filter out "Minecraft n.m"
-                                           , match title "gloss" --> doFloat
-                                           , match title "opengl" --> doFloat
-                                           , match title "keyman" --> doCenterFloat
-                                           , match title "devtools" --> doFloat
-                                           , isDialog --> doCenterFloat
+                         in composeAll (-- float ["mpv", "MEGAsync", "factorio", "Display", "gzdoom"
+                                        --       ,"explorer.exe", "regedit.exe", "control.exe"
+                                        --       ,"kmplot", "qt5ct", "milkytracker", "vlc"
+                                        --       ,"ollydbg.exe", "ZeGrapher"]
+                                        -- ++ centerFloat ["Sxiv","Zathura","Org.gnome.Nautilus"
+                                        --                ,"Qemu-system-x86_64","Qemu-system-i386"
+                                        --                ,"Lxappearance"]
+                                           [ isDialog --> doCenterFloat
                                            , isFullscreen --> doFullFloat
                                            , checkDock --> doLower
+                                           -- , pure True --> doFloat
+                                           -- , stringProperty "_GTK_APPLICATION_ID" =? "io.otsaloma.gaupol" --> doFloat
+                                           -- , match className "minecraft" --> doFloat -- filter out "Minecraft n.m"
+                                           -- , match title "gloss" --> doFloat
+                                           -- , match title "opengl" --> doFloat
+                                           -- , match title "keyman" --> doCenterFloat
+                                           -- , match title "devtools" --> doFloat
+                                           -- , (== "wireshark") <$> appName --> doFloat
+                                           -- , (== "PacketTracer") <$> appName --> doFloat
+                                           -- -- , match className "termonad" --> doCenterFloat
                                            ])
                          -- <+> doCenterFloat
                          <+> manageHook def
   --, handleEventHook    = fullscreenEventHook <+> handleEventHook def
   --, workspaces         = map ((" "++) . (++" "). show) [1 .. 9 :: Int]
+  , workspaces         = map ((" " ++) . (++ " ") . pure) ['壱','弐','参','肆','伍','陸','漆','捌','玖'] -- ['一','二','三','四','五','六','七','八','九']
   , modMask            = mod4Mask
   , keys               = \conf -> M.fromList [ ((modMask conf              , xK_p), spawn $ "j4-dmenu-desktop --no-generic --term=" ++ terminal conf)
                                              , ((modMask conf .|. shiftMask, xK_p), spawn "dmenu_run")
@@ -207,6 +231,14 @@ main = xmonad . xmobarProp . ewmhFullscreen . ewmh $ def
                                              , ((modMask conf .|. shiftMask, xK_x), xmonadPrompt def { font = "-misc-fixed-medium-r-normal--13-*-*-*-*-*-*-*"
                                                                                                      , searchPredicate = fuzzyMatch
                                                                                                      })
+                                             , ((modMask conf .|. shiftMask, xK_g), windowPrompt def { font = "-misc-fixed-medium-r-normal--13-*-*-*-*-*-*-*"
+                                                                                                     , bgColor = "#2f343f"
+                                                                                                     , fgColor = "#d8dee9"
+                                                                                                     , bgHLight = "#d8dee9"
+                                                                                                     , fgHLight = "#2f343f"
+                                                                                                     , alwaysHighlight = True
+                                                                                                     , searchPredicate = fuzzyMatch
+                                                                                                     } Goto allWindows)
                                              , ((modMask conf .|. shiftMask, xK_q), killOnce
                                                                                     >> M.findWithDefault (return ()) (modMask conf .|. shiftMask, xK_q) (keys def conf))
                                              --, ((modMask conf              , xK_q), killOnce
@@ -233,8 +265,15 @@ main = xmonad . xmobarProp . ewmhFullscreen . ewmh $ def
                                                      (stripPrefix "~" title)
 
                                                    titleIsPath <- io $ doesDirectoryExist path
-                                                   if titleIsPath && app == "urxvt"
-                                                     then spawn $ terminal conf ++ " -cd '" ++ escapeSingleQuotes path ++ "'"
+
+                                                   -- urxvt
+                                                   -- if titleIsPath && app == terminal conf
+                                                   --   then spawn $ terminal conf ++ " -cd '" ++ escapeSingleQuotes path ++ "'"
+                                                   --   else spawn $ terminal conf
+
+                                                   -- termonad
+                                                   if titleIsPath && take (length $ terminal conf) (map toLower cls) == terminal conf
+                                                     then io . withCurrentDirectory path . spawn $ terminal conf
                                                      else spawn $ terminal conf)
                                              ]
                                   <+> keys def conf
@@ -255,6 +294,7 @@ main = xmonad . xmobarProp . ewmhFullscreen . ewmh $ def
                          <+> spawnOnce "hsetroot -fill .xmonad/wall.png"
                          <+> spawnOnce "redshift-gtk"
                          <+> spawnOnce "parcellite"
+                         <+> spawnOnce "fcitx5"
                          <+> startupHook def
   }
   where
@@ -269,3 +309,7 @@ main = xmonad . xmobarProp . ewmhFullscreen . ewmh $ def
 
     -- Percent of screen to increment by when resizing panes
     delta   = 3/100
+
+    borderless :: LayoutClass l a =>
+                  l a -> ModifiedLayout (ConfigurableBorder Ambiguity) l a
+    borderless = lessBorders OnlyScreenFloat
