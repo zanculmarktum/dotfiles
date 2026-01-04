@@ -986,3 +986,6 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 ;; Use the other window as target for copying and moving files
 (setq dired-dwim-target t)
+
+;; Sort completion candidates historically
+(setq completions-sort 'historical)
