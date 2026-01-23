@@ -412,7 +412,31 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   ;; :straight t
   :ensure t
   :init
-  (load-theme 'nord t))
+  (load-theme 'nord t)
+  :config
+  (let (;; Taken from `nord-theme.el'.
+        (nord0 (if (nord-display-truecolor-or-graphic-p) "#2E3440" nil))
+        (nord1 (if (nord-display-truecolor-or-graphic-p) "#3B4252" "black"))
+        (nord2 (if (nord-display-truecolor-or-graphic-p) "#434C5E" "#434C5E"))
+        (nord3 (if (nord-display-truecolor-or-graphic-p) "#4C566A" "brightblack"))
+        (nord4 (if (nord-display-truecolor-or-graphic-p) "#D8DEE9" "#D8DEE9"))
+        (nord5 (if (nord-display-truecolor-or-graphic-p) "#E5E9F0" "white"))
+        (nord6 (if (nord-display-truecolor-or-graphic-p) "#ECEFF4" "brightwhite"))
+        (nord7 (if (nord-display-truecolor-or-graphic-p) "#8FBCBB" "cyan"))
+        (nord8 (if (nord-display-truecolor-or-graphic-p) "#88C0D0" "brightcyan"))
+        (nord9 (if (nord-display-truecolor-or-graphic-p) "#81A1C1" "blue"))
+        (nord10 (if (nord-display-truecolor-or-graphic-p) "#5E81AC" "brightblue"))
+        (nord11 (if (nord-display-truecolor-or-graphic-p) "#BF616A" "red"))
+        (nord12 (if (nord-display-truecolor-or-graphic-p) "#D08770" "brightyellow"))
+        (nord13 (if (nord-display-truecolor-or-graphic-p) "#EBCB8B" "yellow"))
+        (nord14 (if (nord-display-truecolor-or-graphic-p) "#A3BE8C" "green"))
+        (nord15 (if (nord-display-truecolor-or-graphic-p) "#B48EAD" "magenta")))
+    ;; Nord by default changes default colors, such as changing red to yellow,
+    ;; cyan to blue, etc. Fix it.
+    (set-face-attribute 'font-lock-warning-face nil :foreground nord11 :weight 'bold)
+    (set-face-attribute 'font-lock-variable-name-face nil :foreground nord13)
+    (set-face-attribute 'font-lock-keyword-face nil :foreground nord7)
+    (set-face-attribute 'font-lock-function-name-face nil :foreground nord9)))
 ;; To show currently enabled themes:
 ;; M-: custom-enabled-themes
 
@@ -552,8 +576,9 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 (use-package vertico
   :ensure t
-  :init
-  (vertico-mode t))
+  ;; :init
+  ;; (vertico-mode t)
+  )
 
 ;;(use-package icomplete-vertical
 ;;  :straight t
