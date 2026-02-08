@@ -6,6 +6,7 @@
 # | Environment variables                                  |
 # +========================================================+
 #export LANG="C.UTF-8"
+export LC_COLLATE=C
 export PATH="$HOME/.local/bin:$HOME/.cabal/bin:$HOME/.node_modules/bin:$HOME/.config/composer/vendor/bin${PATH:+":$PATH"}"
 export MANPATH="$HOME/.local/man:${MANPATH:+"$MANPATH"}"
 export EDITOR="emacsclient -nw"
@@ -38,7 +39,7 @@ export HISTFILESIZE=$HISTSIZE
 export HISTCONTROL=erasedups:ignoreboth
 
 shopt -s histappend                      # append to history, don't overwrite it
-export PROMPT_COMMAND="prompt; history -a; history -c; history -r${PROMPT_COMMAND:+"; "}$PROMPT_COMMAND"
+export PROMPT_COMMAND="prompt; history -a; history -c; history -r"
 unset PROMPT_DIRTRIM
 
 # +========================================================+

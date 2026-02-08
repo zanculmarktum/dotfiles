@@ -6,6 +6,13 @@
 # | Environment variables                                  |
 # +========================================================+
 #export LANG="C.UTF-8"
+export HISTSIZE=100000
+export HISTFILESIZE=$HISTSIZE
+export HISTCONTROL=erasedups:ignoreboth
+
+shopt -s histappend                      # append to history, don't overwrite it
+export PROMPT_COMMAND="prompt; history -a; history -c; history -r"
+unset PROMPT_DIRTRIM
 
 # +========================================================+
 # | stty                                                   |
