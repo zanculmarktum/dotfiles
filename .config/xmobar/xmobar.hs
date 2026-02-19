@@ -2,8 +2,10 @@ import Xmobar
 
 main :: IO ()
 main = xmobar =<< configFromArgs defaultConfig
-  { font = "-misc-fixed-medium-r-normal--13-*-*-*-*-*-*-*"
-  , additionalFonts = ["-wuncon-siji-medium-r-normal--11-*-*-*-*-*-*-*", "xft:FontAwesome:pixelsize=13"]
+  { font = "Fixed"
+  , additionalFonts = ["Noto Sans CJK JP", "FontAwesome"]
+  -- , font = "-misc-fixed-medium-r-normal--13-*-*-*-*-*-*-*"
+  -- , additionalFonts = ["-wuncon-siji-medium-r-normal--11-*-*-*-*-*-*-*", "xft:FontAwesome:pixelsize=13"]
   , bgColor = "#2e3440"
   , fgColor = "#e5e9f0"
   , lowerOnStart = True
@@ -35,8 +37,8 @@ main = xmobar =<< configFromArgs defaultConfig
                , Run $ Memory ["-t","<icon=mem.xbm/><usedratio>%"] 10
                , Run $ Swap ["-t","<usedratio>%"] 10
                , Run $ Com "uname" ["-s","-r"] "" 36000
-               --, Run $ Date "<fn=2>\xf073 </fn>%a %b %_d %Y %H:%M:%S" "date" 10
-               , Run $ DateZone "<fn=2>\xf073 </fn>%x（%a）%H:%M:%S" "ja_JP.UTF8" "" "date" 10
+               , Run $ Date "<fn=2>\xf073 </fn>%a %b %_d %Y %H:%M:%S" "date" 10
+               -- , Run $ DateZone "<fn=2>\xf073 </fn>%x（%a）%H:%M:%S" "ja_JP.UTF8" "" "date" 10
                , Run $ Com ".config/xmobar/trayer-padding-icon.sh" ["panel"] "trayer" 10
                , Run $ CoreTemp ["-t", "<icon=temp.xbm/><core0>C"
                                 ,"-L", "40", "-H", "60"
@@ -44,7 +46,7 @@ main = xmobar =<< configFromArgs defaultConfig
                                 ] 50
                , Run XMonadLog
                ]
-  , template = " %XMonadLog% }{ \
+  , template = "} %XMonadLog% { \
                \%wlp3s0%%enp0s25% %battery% %cpu% %coretemp% %memory% / %swap% %date% %trayer%"
   , iconRoot = ".config/xmobar/icons"
   }
