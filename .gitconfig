@@ -3,3 +3,5 @@
 	name = Azure Zanculmarktum
 [init]
 	defaultBranch = master
+[commit]
+	gpgsign = true
