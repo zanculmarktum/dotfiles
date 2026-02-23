@@ -65,5 +65,5 @@ export GREP_COLORS="mt=37;45"
 # | Starts the X server                                    |
 # +========================================================+
 if [[ -t 0 ]] && [[ "$(tty)" == "/dev/tty1" ]] && [[ -z "$DISPLAY" ]] && [[ "$(id -u)" != "0" ]]; then
-    exec startx ~/.xinitrc xmonad -- -keeptty 2>~/.xsession-errors
+    exec xinit ~/.xinitrc xmonad -- $(which X) :0 vt1 -keeptty 2>~/.xsession-errors
 fi
