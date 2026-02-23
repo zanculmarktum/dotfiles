@@ -4,6 +4,9 @@
 userresources=$HOME/.Xresources
 usermodmap=$HOME/.Xmodmap
 
+# Set the keyboard layout
+setxkbmap -layout jp,us
+
 # merge in defaults and keymaps
 if [ -f $userresources ]; then
   xrdb -merge $userresources
@@ -49,10 +52,10 @@ case $session in
     #export XDG_CURRENT_DESKTOP=GNOME
     #export QT_STYLE_OVERRIDE=gtk
     export QT_QPA_PLATFORMTHEME=qt5ct
-  
+
     #compton -b &
-    feh --bg-fill "/figment/wall/RkJ5hpW.png" &
-    exec i3
+    # feh --bg-fill "/figment/wall/RkJ5hpW.png" &
+    exec dbus-run-session i3
     ;;
   openbox)
     if [ -z "$DESKTOP_SESSION" -a -x /usr/bin/ck-launch-session ]; then
@@ -105,10 +108,17 @@ case $session in
     ck-launch-session dbus-launch --exit-with-session twm
     ;;
   xmonad)
-    exec xmonad
+    exec dbus-run-session xmonad
+    ;;
+  stumpwm)
+    # exec sbcl --non-interactive --load $HOME/stumpwm-24.11/foo.lisp
+    exec sbcl --non-interactive \
+         --eval "(push \"/home/azure/stumpwm-24.11/\" asdf:*central-registry*)" \
+         --eval "(asdf:operate 'asdf:load-op ':stumpwm)" \
+         --eval "(stumpwm:stumpwm)"
     ;;
   # No known session, try to run it as command
-  *) exec $1;;
+  *) exec dbus-run-session $1;;
 esac
 
 # vim:ts=2:sw=2:et
