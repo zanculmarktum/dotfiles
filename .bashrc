@@ -1,3 +1,7 @@
+if (. /etc/os-release; [ "$ID" = "fedora" ]) && [ -f /etc/bashrc ]; then
+    . /etc/bashrc
+fi
+
 . ~/.bash_functions
 . ~/.bash_aliases
 . ~/.bash_miscs
