@@ -1,0 +1,20 @@
+// try
+// $ sudo ln -s ~/.config/xkb/symbols/remap /usr/share/X11/xkb/symbols/
+// if setxkbmap can't locate
+
+// default partial alphanumeric_keys modifier_keys
+xkb_symbols "remap" {
+
+    include "jp"
+
+    key <TAB>   {[ Escape       ]};
+    replace key <CAPS>  {[ Tab  ]};
+
+    key <COMP>  {[ Super_R      ]}; // Menu
+
+    key <I166>  {[ NoSymbol     ]}; // XF86Back
+    key <I167>  {[ NoSymbol     ]}; // XF86Forward
+
+    key <HENK>  {[ space        ]}; // Henkan_Mode
+    key <HKTG>  {[ space        ], type[group1]="PC_ALT_LEVEL2" }; // Hiragana_Katakana
+};
