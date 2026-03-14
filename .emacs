@@ -346,6 +346,15 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
     (error "xclip not found in exec-path"))
   (shell-command (concat "printf " (shell-quote-argument (current-kill 0)) " | xclip -selection clipboard >/dev/null 2>&1")))
 
+(defun wl-clip ()
+  (interactive)
+  (unless (executable-find "wl-copy")
+    (error "wl-copy not found in exec-path"))
+  (shell-command-on-region (region-beginning)
+                           (region-end)
+                           "wl-copy >/dev/null 2>&1"
+                           nil nil nil nil))
+
 ;; Forward region to 0x0.st
 (defun 0x0 ()
   (interactive)
@@ -442,6 +451,7 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 (require 'info)
 (info-initialize)
+(add-to-list 'Info-directory-list (expand-file-name "~/.local/share/info"))
 
 ;;; https://www.emacswiki.org/emacs/ModeLinePosition
 (let ((file (expand-file-name "lisp/modeline-posn/modeline-posn.el" user-emacs-directory)))
@@ -782,6 +792,14 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   :ensure t
   :init
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+;; (use-package guix
+;;   :ensure t
+;;   :init
+;;   (add-hook 'scheme-mode-hook 'guix-devel-mode))
+
+(use-package meson-mode
+  :ensure t)
 
 ;; Display
 (menu-bar-mode 0)           ;; hides menu bar
