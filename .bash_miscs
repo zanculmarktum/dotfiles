@@ -14,4 +14,10 @@ if command -v dircolors >/dev/null 2>&1; then
   test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
 fi
 
+# Fix inappropriate ioctl
+export GPG_TTY=$(tty)
+
 # vim:ft=sh
+# Local Variables:
+# mode: shell-script
+# End:
