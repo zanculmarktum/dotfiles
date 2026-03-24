@@ -180,4 +180,9 @@
 # xkb
 !.config/xkb
 !.config/xkb/symbols
-!.config/xkb/symbols/remap
+!.config/xkb/symbols/**
+
+# xfce4-terminal
+!.local/share/xfce4
+!.local/share/xfce4/terminal
+!.local/share/xfce4/terminal/**
