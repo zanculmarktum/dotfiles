@@ -186,3 +186,7 @@
 !.local/share/xfce4
 !.local/share/xfce4/terminal
 !.local/share/xfce4/terminal/**
+
+# awesome
+!.config/awesome
+!.config/awesome/**
