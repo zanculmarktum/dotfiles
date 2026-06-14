@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xkbConfigRegistry SYSTEM "xkb.dtd">
+<xkbConfigRegistry version="1.1">
+  <layoutList>
+    <layout>
+      <configItem>
+        <name>remap</name>
+        <!-- Keyboard indicator for Japanese layouts -->
+        <shortDescription>ja</shortDescription>
+        <description>Japanese (Remap)</description>
+        <countryList>
+          <iso3166Id>JP</iso3166Id>
+        </countryList>
+        <languageList>
+          <iso639Id>jpn</iso639Id>
+        </languageList>
+      </configItem>
+    </layout>
+  </layoutList>
+</xkbConfigRegistry>

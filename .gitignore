@@ -179,6 +179,8 @@
 
 # xkb
 !.config/xkb
+!.config/xkb/rules
+!.config/xkb/rules/**
 !.config/xkb/symbols
 !.config/xkb/symbols/**
 
