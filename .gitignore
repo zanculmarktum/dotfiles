@@ -192,3 +192,7 @@
 # awesome
 !.config/awesome
 !.config/awesome/**
+
+# gammastep
+!.config/gammastep
+!.config/gammastep/config.ini
