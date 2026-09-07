@@ -54,6 +54,8 @@ import XMonad.Layout.SimplestFloat
 import XMonad.Layout.WindowArranger (WindowArranger, windowArrangeAll)
 import System.IO
 
+import XMonad.Actions.FloatSnap
+
 -- Remember the spawned PIDs
 newtype SpawnOnce = SpawnOnce { unspawnOnce :: M.Map String ProcessID }
     deriving (Typeable, Read, Show)
@@ -151,9 +153,15 @@ xmobarProp :: LayoutClass l Window
            -> XConfig (ModifiedLayout AvoidStruts l)
 xmobarProp =
   withEasySB (statusBarProp "xmobar"
-              (pure xmobarPP { ppCurrent = xmobarColor yellow "" . wrap "「" "」" . tail . init
+              (pure xmobarPP { ppCurrent = xmobarColor yellow "" . wrap "[" "]"
                              , ppTitle   = xmobarColor green "" . shorten 1000
                              , ppUrgent  = xmobarColor red yellow
+                             , ppLayout  = \title -> case title of
+                                 "SimplestFloat" -> "<icon=layout-float.xbm/>"
+                                 "Tall"          -> "<icon=layout-tiled.xbm/>"
+                                 "Mirror Tall"   -> "<icon=layout-mtiled.xbm/>"
+                                 "Full"          -> "<icon=layout-full.xbm/>"
+                                 _               -> title
                              })) toggleStrutsKey
 
 toggleStrutsKey :: XConfig t -> (KeyMask, KeySym)
@@ -189,7 +197,7 @@ main :: IO ()
 main = xmonad . xmobarProp . ewmhFullscreen . ewmh $ def
   { normalBorderColor  = "#a6a6a6"
   , focusedBorderColor = white
-  , terminal           = "termonad"
+  , terminal           = "xfce4-terminal"
   , layoutHook         = borderless simplestFloat
                          ||| borderless tiled
                          ||| borderless (Mirror tiled)
@@ -222,11 +230,11 @@ main = xmonad . xmobarProp . ewmhFullscreen . ewmh $ def
                          -- <+> doCenterFloat
                          <+> manageHook def
   --, handleEventHook    = fullscreenEventHook <+> handleEventHook def
-  --, workspaces         = map ((" "++) . (++" "). show) [1 .. 9 :: Int]
-  , workspaces         = map ((" " ++) . (++ " ") . pure) ['壱','弐','参','肆','伍','陸','漆','捌','玖'] -- ['一','二','三','四','五','六','七','八','九']
+  , workspaces         = map show [1 .. 9 :: Int]
+  --, workspaces         = map ((" " ++) . (++ " ") . pure) ['壱','弐','参','肆','伍','陸','漆','捌','玖'] -- ['一','二','三','四','五','六','七','八','九']
   , modMask            = mod4Mask
-  , keys               = \conf -> M.fromList [ ((modMask conf              , xK_p), spawn $ "j4-dmenu-desktop --no-generic --term=" ++ terminal conf)
-                                             , ((modMask conf .|. shiftMask, xK_p), spawn "dmenu_run")
+  , keys               = \conf -> M.fromList [ ((modMask conf              , xK_p), spawn $ "rofi -show drun") -- "j4-dmenu-desktop --dmenu='dmenu -i -fn fixed -nf \\#a6a6a6 -nb \\#2f343f -sf \\#e5e9f0 -sb \\#2f343f' --term=" ++ terminal conf
+                                             , ((modMask conf .|. shiftMask, xK_p), spawn "rofi -show run") -- "dmenu_run -fn fixed -nf \\#a6a6a6 -nb \\#2f343f -sf \\#e5e9f0 -sb \\#2f343f"
                                              , ((modMask conf              , xK_f), withFocused float)
                                              , ((modMask conf .|. shiftMask, xK_x), xmonadPrompt def { font = "-misc-fixed-medium-r-normal--13-*-*-*-*-*-*-*"
                                                                                                      , searchPredicate = fuzzyMatch
@@ -244,7 +252,7 @@ main = xmonad . xmobarProp . ewmhFullscreen . ewmh $ def
                                              --, ((modMask conf              , xK_q), killOnce
                                              --                                       >> M.findWithDefault (return ()) (modMask conf, xK_q) (keys def conf))
                                              , ((modMask conf .|. shiftMask, xK_t), sinkAll)
-                                             , ((modMask conf, xK_u), spawn "xclip -o 2>/dev/null | xargs chromium")
+                                             , ((modMask conf, xK_u), spawn "xclip -o 2>/dev/null | xargs librewolf")
                                              , ((modMask conf .|. shiftMask, xK_Return), do
                                                    ws <- gets windowset
                                                    let maybeStack = W.stack . W.workspace . W.current $ ws
@@ -277,6 +285,11 @@ main = xmonad . xmobarProp . ewmhFullscreen . ewmh $ def
                                                      else spawn $ terminal conf)
                                              ]
                                   <+> keys def conf
+  , mouseBindings      = \conf -> M.fromList [ ((modMask conf,               button1), (\w -> focus w >> mouseMoveWindow w >> windows W.shiftMaster >> ifClick (snapMagicMove (Just 50) (Just 50) w)))
+                                             -- , ((modMask conf .|. shiftMask, button1), (\w -> focus w >> mouseMoveWindow w >> ifClick (snapMagicResize [L,R,U,D] (Just 50) (Just 50) w)))
+                                             -- , ((modMask conf,               button3), (\w -> focus w >> mouseResizeWindow w >> ifClick (snapMagicResize [R,D] (Just 50) (Just 50) w)))
+                                             ]
+                                  <+> mouseBindings def conf
   , borderWidth        = 2
   --, logHook            = catchIO (putStrLn "foo") <+> logHook def
   , startupHook        = spawnOnce (unwords [ "trayer", "-l"
@@ -291,7 +304,7 @@ main = xmonad . xmobarProp . ewmhFullscreen . ewmh $ def
                                             , "--tint", "0x2e3440"
                                             , "--expand", "true"
                                             ])
-                         <+> spawnOnce "hsetroot -fill .xmonad/wall.png"
+                         <+> spawnOnce "hsetroot -cover /usr/share/backgrounds/images/earth_from_space.jpg"
                          <+> spawnOnce "redshift-gtk"
                          <+> spawnOnce "parcellite"
                          <+> spawnOnce "fcitx5"
