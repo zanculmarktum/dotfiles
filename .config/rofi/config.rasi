@@ -1,0 +1,34 @@
+/* -*- css -*- */
+configuration {
+    font: "Cantarell 12";
+    line-margin: 12;
+
+    display-ssh:    "";
+    display-run:    "";
+    display-drun:   "";
+    display-window: "";
+    display-combi:  "";
+    show-icons:     true;
+
+    disable-history: true;
+}
+
+
+@theme "~/.config/rofi/nord.rasi"
+
+listview {
+	lines: 6;
+	/* columns: 2; */
+}
+
+window {
+	width: 50%;
+}
+
+element-icon {
+    size: 2em;
+}
+
+element-text {
+    vertical-align: 0.5;
+}

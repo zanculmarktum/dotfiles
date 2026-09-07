@@ -140,6 +140,10 @@
 
 # emacs
 !.emacs
+!.emacs.d
+!.emacs.d/lisp
+!.emacs.d/lisp/modeline-posn
+!.emacs.d/lisp/modeline-posn/modeline-posn.el
 
 # termite
 !.config/termite
@@ -196,3 +200,8 @@
 # gammastep
 !.config/gammastep
 !.config/gammastep/config.ini
+
+# rofi
+!.config/rofi
+!.config/rofi/config.rasi
+!.config/rofi/nord.rasi
