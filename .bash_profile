@@ -1,3 +1,7 @@
+if (. /etc/os-release; [ "x$ID" = "xfedora" ]) && [ -f /etc/bashrc ]; then
+    . /etc/bashrc
+fi
+
 . ~/.bash_functions
 . ~/.bash_aliases
 . ~/.bash_miscs
@@ -10,12 +14,12 @@ export LC_COLLATE=C
 export PATH="$HOME/.local/bin:$HOME/.cabal/bin:$HOME/.node_modules/bin:$HOME/.config/composer/vendor/bin${PATH:+":$PATH"}"
 export MANPATH="$HOME/.local/man:${MANPATH:+"$MANPATH"}"
 export EDITOR="emacsclient -nw"
-export BROWSER="chromium"
+#export BROWSER="librewolf"
 #export LYNX_CFG="~/.lynx.cfg"
 #export LYNX_LSS="~/.lynx.lss"
 #export PYTHONDOCS="/usr/share/doc/python2/html/"
 #export XDG_CONFIG_HOME="$HOME/.config"
-export PYTHONSTARTUP=~/.pystartup
+#export PYTHONSTARTUP=~/.pystartup
 export QT_QPA_PLATFORMTHEME=qt5ct
 #export QT_QPA_PLATFORMTHEME=gtk2
 if command -v ruby >/dev/null 2>&1; then
@@ -30,6 +34,21 @@ export NODE_REPL_HISTORY_SIZE=100000
 export GIT_PS1_SHOWCOLORHINTS=true \
 	GIT_PS1_SHOWDIRTYSTATE=true \
 	GIT_PS1_SHOWUNTRACKEDFILES=true
+export XMODIFIERS=@im=fcitx5
+export GTK_IM_MODULE=fcitx5
+export QT_IM_MODULE=fcitx5
+# export XMODIFIERS=@im=fcitx5
+# export GTK_IM_MODULE=fcitx5
+# export QT_IM_MODULE=fcitx5
+# export QT_IM_MODULES="wayland;fcitx5"
+export XKB_DEFAULT_LAYOUT="remap"
+# export XKB_DEFAULT_VARIANT=",dvorak,"
+# export XKB_DEFAULT_OPTIONS="grp:win_space_toggle,ctrl:nocaps"
+export SSH_ASKPASS_REQUIRE=prefer
+
+# Use `xim` in case some Electron apps (like Chromium) refuse to work with IBus
+# export GTK_IM_MODULE=xim
+# export QT_IM_MODULE=xim
 
 # +========================================================+
 # | History                                                |
