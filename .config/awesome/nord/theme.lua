@@ -16,7 +16,7 @@ theme.wallpaper = themes_path .. "nord/nord-background.png"
 -- {{{ Styles
 -- theme.font      = "sans 8"
 -- theme.font      = "Play 9"
-theme.font      = "Terminus 8"
+theme.font      = "Misc Fixed 10"
 
 -- {{{ Colors
 theme.fg_normal  = "#ECEFF4"
