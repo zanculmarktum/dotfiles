@@ -40,7 +40,7 @@ end)
 beautiful.init(gears.filesystem.get_configuration_dir() .. "nord/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "xfce4-terminal"
+terminal = "tym"
 editor = os.getenv("EDITOR") or "nano"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -269,7 +269,20 @@ awful.keyboard.append_global_keybindings({
                   }
               end,
               {description = "lua execute prompt", group = "awesome"}),
-    awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
+    awful.key({ modkey,           }, "Return",
+              function ()
+                  -- Spawn terminal using currently focused window title
+                  -- as current working directory
+                  local cwd = ""
+                  if awful.client.next(0) ~= nil then
+                      cwd = awful.client.next(0).name -- gets title
+                      cwd = cwd:gsub("^~/", os.getenv("HOME") .. "/")
+                      if not gears.filesystem.is_dir(cwd) then
+                          cwd = ""
+                      end
+                  end
+                  awful.spawn({ awful.util.shell, "-c", "cd " .. cwd .. " && " .. terminal })
+              end,
               {description = "open a terminal", group = "launcher"}),
     awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
               {description = "run prompt", group = "launcher"}),
