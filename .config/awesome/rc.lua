@@ -68,8 +68,10 @@ mymainmenu = awful.menu({ items = {
 }
                        })
 
-mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
-                                     menu = mymainmenu })
+mylauncher = -- awful.widget.launcher({ image = beautiful.awesome_icon,
+             --                         menu = mymainmenu })
+             { image = beautiful.awesome_icon,
+               widget = wibox.widget.imagebox }
 
 -- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
@@ -111,6 +113,12 @@ screen.connect_signal("request::wallpaper", function(s)
              widget                = wibox.widget.imagebox,
          },
     }
+
+    awful.spawn.once("/usr/libexec/geoclue-2.0/demos/agent", {}, function () return true end, "geoclue")
+    awful.spawn.once("parcellite", {}, function () return true end, "parcellite")
+    awful.spawn.once("redshift-gtk", {}, function () return true end, "redshift-gtk")
+    awful.spawn.once("fcitx5", {}, function () return true end, "fcitx5")
+    awful.spawn.once({"tym", "--daemon"}, {}, function () return true end, "tym")
 end)
 
 gears.timer {
@@ -257,7 +265,11 @@ awful.keyboard.append_global_keybindings({
     --           {description = "show main menu", group = "awesome"}),
     awful.key({ modkey, "Control" }, "r", function () awesome.restart() end,
               {description = "reload awesome", group = "awesome"}),
-    awful.key({ modkey, "Shift"   }, "q", function () awesome.quit() end,
+    awful.key({ modkey, "Shift"   }, "q",
+              function ()
+                  awful.spawn({ "killall", "redshift" })
+                  awesome.quit()
+              end,
               {description = "quit awesome", group = "awesome"}),
     awful.key({ modkey }, "x",
               function ()
