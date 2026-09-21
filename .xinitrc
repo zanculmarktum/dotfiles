@@ -44,7 +44,7 @@ fi
 xbindkeys
 
 # Starts the party
-session=${1:-dwm}
+session=${1:-awesome}
 
 case $session in
   i3|i3wm)
@@ -55,7 +55,7 @@ case $session in
 
     #compton -b &
     # feh --bg-fill "/figment/wall/RkJ5hpW.png" &
-    exec dbus-run-session i3
+    dbus-launch --exit-with-session i3
     ;;
   openbox)
     if [ -z "$DESKTOP_SESSION" -a -x /usr/bin/ck-launch-session ]; then
@@ -68,7 +68,7 @@ case $session in
     ck-launch-session dbus-launch --exit-with-session ~/.config/2bwm/autostart.sh
     ;;
   awesome)
-    ck-launch-session dbus-launch --exit-with-session awesome
+    dbus-launch --exit-with-session awesome
     ;;
   fvwm)
     ck-launch-session dbus-launch --exit-with-session fvwm
@@ -84,7 +84,7 @@ case $session in
     ;;
   dwm)
     if [ -f /etc/slackware-version ]; then
-      exec ck-launch-session dwm
+      ck-launch-session dwm
     else
       exec dwm
     fi
@@ -108,7 +108,7 @@ case $session in
     ck-launch-session dbus-launch --exit-with-session twm
     ;;
   xmonad)
-    exec dbus-run-session xmonad
+    dbus-launch --exit-with-session xmonad
     ;;
   stumpwm)
     # exec sbcl --non-interactive --load $HOME/stumpwm-24.11/foo.lisp
@@ -118,7 +118,7 @@ case $session in
          --eval "(stumpwm:stumpwm)"
     ;;
   # No known session, try to run it as command
-  *) exec dbus-run-session $1;;
+  *) dbus-launch --exit-with-session $1;;
 esac
 
 # vim:ts=2:sw=2:et
