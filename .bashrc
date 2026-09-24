@@ -1,4 +1,4 @@
-if (. /etc/os-release; [ "$ID" = "fedora" ]) && [ -f /etc/bashrc ]; then
+if [ -e /etc/os-release ] && (. /etc/os-release; [ "x$ID" = "xfedora" ]) && [ -f /etc/bashrc ]; then
     . /etc/bashrc
 fi
 
@@ -34,4 +34,3 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-

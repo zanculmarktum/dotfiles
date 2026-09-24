@@ -1,4 +1,4 @@
-if (. /etc/os-release; [ "x$ID" = "xfedora" ]) && [ -f /etc/bashrc ]; then
+if [ -e /etc/os-release ] && (. /etc/os-release; [ "x$ID" = "xfedora" ]) && [ -f /etc/bashrc ]; then
     . /etc/bashrc
 fi
 
