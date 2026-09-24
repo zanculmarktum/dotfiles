@@ -53,6 +53,9 @@ function prompt {
         xterm*|rxvt-*|st-*|alacritty|screen)
             TITLEBAR="\[\033]0;\w\007\]"
             ;;
+        foot)
+            TITLEBAR="\[\033]2;\w\007\]"
+            ;;
         *)
             TITLEBAR=""
             ;;
@@ -63,21 +66,21 @@ function prompt {
     #                                  148 = ^Z                      130 = ^C
     if [[ "$exitcode" != "0" ]] && [[ "$exitcode" != "148" ]] && [[ "$exitcode" != "130" ]]; then
         ps_color="$bold_red"
-        ps_exitcode="[\$?]"
+        ps_exitcode="[$exitcode]"
     fi
 
-    if [[ "$UID" -eq 0 ]] || [[ "${LANG: -6}" != ".UTF-8" ]]; then
-        export PS1="${TITLEBAR}${ps_color}[\w]\\\$${normal} "
-    else
+    # if [[ "$UID" -eq 0 ]] || [[ "${LANG: -6}" != ".UTF-8" ]]; then
+    #     export PS1="${TITLEBAR}${ps_color}[\w]\\\$${normal} "
+    # else
         PS1=""
         #if command -v __git_ps1 >/dev/null 2>&1; then
         #    __git_ps1 "" "" "%s"
         #fi
-        PS1="${TITLEBAR}${ps_color}┌─${ps_exitcode}[\w]${SSH_CLIENT:+" [ssh: $HOSTNAME]"}${PS1:+" [${PS1}${ps_color}]"}${normal}
-${ps_color}└─[\\\$]${normal} "
+        PS1="${TITLEBAR}${ps_color}┌─[\w] [\D{%H:%M:%S}]${SSH_CLIENT:+" [ssh: $HOSTNAME]"}${PS1:+" [${PS1}${ps_color}]"}${normal}
+${ps_color}└─${ps_exitcode}[\\\$]${normal} "
         PS2="└─[\\\$] "
         export PS1 PS2
-    fi
+    # fi
 }
 
 # Push cd'ed directories into stack
@@ -243,7 +246,7 @@ function e {
     if [[ "$1" == "-" ]]; then
         TMP="$(mktemp -t emacsstdinXXX)";
         cat >"$TMP";
-        emacsclient -nw --eval "(let ((b (create-file-buffer \"*stdin*\"))) (switch-to-buffer b) (insert-file-contents \"${TMP}\") (delete-file \"${TMP}\"))"
+        emacsclient -nw --alternate-editor='emacs -nw' --eval "(let ((b (create-file-buffer \"*stdin*\"))) (switch-to-buffer b) (insert-file-contents \"${TMP}\") (delete-file \"${TMP}\"))"
     else
         emacsclient -nw --alternate-editor='emacs -nw' "$@"
     fi;
