@@ -124,7 +124,7 @@ function cd {
         #    return 0
         #fi
 
-        while [[ "$dir" =~ (.*)/$ ]]; do
+        while [[ "$dir" =~ (.+)/$ ]]; do
             dir="${BASH_REMATCH[1]}"
         done
 
