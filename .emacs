@@ -814,12 +814,13 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   :config
   (setq company-idle-delay 0))
 
-(use-package lsp-java
- :ensure t
- :init
- (add-hook 'java-mode-hook #'lsp))
+(use-package eglot-java
+  :ensure t)
+(when (display-graphic-p)
+  (add-hook 'java-mode-hook 'eglot-java-mode)
+  (add-hook 'java-mode-hook 'trust-manager-mode))
 
-(use-package flycheck
+(use-package trust-manager
   :ensure t)
 
 (use-package groovy-mode
@@ -880,7 +881,8 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
                                      neotree-mode
                                      Man-mode
                                      completion-list-mode
-                                     special-mode)))
+                                     special-mode
+                                     treemacs-mode)))
            (not (minibufferp)))
           (display-line-numbers-mode)))
     (global-display-line-numbers-mode)))
