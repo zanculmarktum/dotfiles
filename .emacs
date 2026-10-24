@@ -1,4 +1,4 @@
-;; Fix "Bad Request" issue.
+;; Fix "Bad Request" issue.  -*- lexical-binding: t; -*-
 (when (version< emacs-version "26.3")
   (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
@@ -732,7 +732,9 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 (use-package go-mode
   ;; :straight t
-  :ensure t)
+  :ensure t
+  :init
+  (add-hook 'go-mode-hook 'eglot-ensure))
 
 (use-package xonsh-mode
   ;; :straight t
@@ -744,6 +746,7 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   :init
   (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
   (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+  ;; (electric-indent-mode 0)
   ;; (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
   (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
   (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
@@ -801,6 +804,27 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (use-package meson-mode
   :ensure t)
 
+(use-package portage-modes
+  :ensure t)
+
+(use-package company
+  :ensure t
+  :init
+  (add-hook 'after-init-hook 'global-company-mode)
+  :config
+  (setq company-idle-delay 0))
+
+(use-package lsp-java
+ :ensure t
+ :init
+ (add-hook 'java-mode-hook #'lsp))
+
+(use-package flycheck
+  :ensure t)
+
+(use-package groovy-mode
+  :ensure t)
+
 ;; Display
 (menu-bar-mode 0)           ;; hides menu bar
 (tool-bar-mode 0)           ;; hides tool bar
@@ -809,7 +833,7 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
   (scroll-bar-mode 0))      ;; disables scroll bar
 
 ;; Frames
-(add-to-list 'default-frame-alist '(font . "Fira Code-10"))
+(add-to-list 'default-frame-alist '(font . "Adwaita Mono-10"))
 ;;(setq default-frame-alist (cl-remove-if
 ;;                           #'(lambda (x) (eq (car x) 'font))
 ;;                           default-frame-alist))
@@ -879,7 +903,6 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (global-set-key (kbd "C-c C-f")
                 'comint-dynamic-complete-filename)
                 ;;'comint-replace-by-expanded-filename
-
 
 ;; Don't insert tabs
 (setq-default indent-tabs-mode nil)
@@ -1000,10 +1023,10 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (setq css-indent-offset 2)
 
 ;; Set PATH
-(append-path (expand-file-name "~/.config/composer/vendor/bin") t)
-(append-path (expand-file-name "~/.node_modules/bin") t)
-(append-path (expand-file-name "~/.cabal/bin") t)
-(append-path (expand-file-name "~/.local/bin") t)
+;; (append-path (expand-file-name "~/.config/composer/vendor/bin") t)
+;; (append-path (expand-file-name "~/.node_modules/bin") t)
+;; (append-path (expand-file-name "~/.cabal/bin") t)
+;; (append-path (expand-file-name "~/.local/bin") t)
 
 ;; Kill an entire line without having to C-a first
 (global-set-key (kbd "C-M-k") #'(lambda ()
@@ -1032,3 +1055,17 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 
 ;; Sort completion candidates historically
 (setq completions-sort 'historical)
+
+;; Disable line number in eww
+(add-hook 'eww-mode-hook #'(lambda () (display-line-numbers-mode 0)))
+
+;; Remember a list of recent files
+(recentf-mode 1)
+
+;; Show url at point in eww
+(add-hook 'eww-mode-hook #'(lambda () (bind-key "i" #'(lambda ()
+                                                        (interactive)
+                                                        (message "%s" (eww--url-at-point))) 'eww-mode-map)))
+
+;; Search preview height
+(setq search-slow-window-lines 10)
