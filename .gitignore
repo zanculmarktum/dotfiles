@@ -30,6 +30,9 @@
 # xinitrc
 !.xinitrc
 
+# xsession
+!.xsession
+
 # .Xresources
 !.Xresources
 
