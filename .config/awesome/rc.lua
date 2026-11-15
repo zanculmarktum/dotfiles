@@ -40,7 +40,7 @@ end)
 beautiful.init(gears.filesystem.get_configuration_dir() .. "nord/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "tym"
+terminal = "urxvt"
 editor = os.getenv("EDITOR") or "nano"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -100,25 +100,41 @@ end)
 
 -- {{{ Wallpaper
 screen.connect_signal("request::wallpaper", function(s)
+    local Gio = require("lgi").Gio
+
+    local files = {"/usr/share/wallpapers/Mageia/contents/images/3840x2160.png"}
+
+    local path = "/usr/share/mga/screensaver"
+
+    local file_list = Gio.File.new_for_path(path):enumerate_children("standard::*", 0)
+
+    for file in function() return file_list:next_file() end do
+        if file:get_file_type() == "REGULAR" then
+            local file_name = file:get_display_name()
+            table.insert(files, path .. "/" .. file_name)
+        end
+    end
+
     awful.wallpaper {
         screen = s,
         widget = {
              horizontal_fit_policy = "fit",
              vertical_fit_policy   = "fit",
-             image                 = gears.filesystem.get_random_file_from_dir(
-                 "/usr/share/backgrounds",
-                 {".jpg", ".png", ".svg"},
-                 true
-             ),
+             image                 = files[math.random(#files)],
+             -- image                 = gears.filesystem.get_random_file_from_dir(
+             --     "/usr/share/mga/screensaver/", -- "/usr/share/backgrounds",
+             --     {".jpg", ".png", ".svg", ".jxl"},
+             --     true
+             -- ),
              widget                = wibox.widget.imagebox,
          },
     }
 
-    awful.spawn.once("/usr/libexec/geoclue-2.0/demos/agent", {}, function () return true end, "geoclue")
-    awful.spawn.once("parcellite", {}, function () return true end, "parcellite")
-    awful.spawn.once("redshift-gtk", {}, function () return true end, "redshift-gtk")
-    awful.spawn.once("fcitx5", {}, function () return true end, "fcitx5")
-    awful.spawn.once({"tym", "--daemon"}, {}, function () return true end, "tym")
+    -- awful.spawn.once("/usr/libexec/geoclue-2.0/demos/agent", {}, function () return true end, "geoclue")
+    -- awful.spawn.once("parcellite", {}, function () return true end, "parcellite")
+    -- awful.spawn.once("redshift-gtk", {}, function () return true end, "redshift-gtk")
+    -- awful.spawn.once("fcitx5", {}, function () return true end, "fcitx5")
+    -- awful.spawn.once({"tym", "--daemon"}, {}, function () return true end, "tym")
 end)
 
 gears.timer {
