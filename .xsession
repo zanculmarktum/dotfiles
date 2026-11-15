@@ -33,6 +33,9 @@ fi
 # Starts xbindkeys
 xbindkeys
 
+# Autostart the apps
+xdg-autostart -d Old
+
 # Starts the party
 session=${1:-awesome}
 
