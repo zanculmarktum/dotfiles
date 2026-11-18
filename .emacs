@@ -861,6 +861,10 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (setq custom-file (expand-file-name "custom" user-emacs-directory))
 (load custom-file nil 'nomessage)
 
+;; Set C files location for M-x describe-function (C-h f)
+(setq find-function-C-source-directory
+      "/usr/src/debug/emacs-%{version}/src/")
+
 ;; Highlight parentheses
 (setq show-paren-delay 0)
 (show-paren-mode 1)
@@ -992,8 +996,8 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (setq-default mode-line-buffer-identification (append '(-20) (propertized-buffer-identification "%12b")))
 
 ;; Set bash history size
-(setenv "HISTSIZE" "100000")
-(setenv "HISTFILESIZE" (getenv "HISTSIZE"))
+;; (setenv "HISTSIZE" "100000")
+;; (setenv "HISTFILESIZE" (getenv "HISTSIZE"))
 
 ;; NFO viewer
 ;; (revert-buffer-with-coding-system 'cp437)
@@ -1016,10 +1020,10 @@ Also add to `exec-path' if ADD-EXEC-PATH is non-nil."
 (setq read-quoted-char-radix 10)
 
 ;; Set the browser
-(setenv "BROWSER" "chromium")
+;; (setenv "BROWSER" "chromium")
 
 ;; Set the editor
-(setenv "EDITOR" "emacsclient -nw")
+;; (setenv "EDITOR" "emacsclient -nw")
 
 ;; Set CSS mode indent offset
 (setq css-indent-offset 2)
