@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [ "x${PATH#*/usr/local/bin}" != "x${PATH}" ]; then
+  export PATH=/usr/local/bin:$PATH
+fi
+
 # Set the keyboard layout
 setxkbmap -layout jp,us
 
